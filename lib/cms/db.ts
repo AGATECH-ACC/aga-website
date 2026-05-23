@@ -1,6 +1,6 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
-import { createSupabaseServerClient } from "@/lib/supabase/server"
 
+import { getAdminSessionEmail, hasAdminPasscodeConfig } from "./admin-session"
 import type {
   CmsCollection,
   CmsEntry,
@@ -91,17 +91,15 @@ function mapMedia(asset: DbMedia): CmsMediaAsset {
 }
 
 export async function getCurrentAdmin() {
-  const supabase = await createSupabaseServerClient()
+  const supabase = createSupabaseAdminClient()
 
-  if (!supabase) {
+  if (!supabase || !hasAdminPasscodeConfig()) {
     return { user: null, admin: null, configured: false }
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const email = await getAdminSessionEmail()
 
-  if (!user?.email) {
+  if (!email) {
     return { user: null, admin: null, configured: true }
   }
 
@@ -109,15 +107,15 @@ export async function getCurrentAdmin() {
     .schema("cms")
     .from("admin_users")
     .select("email, role, active")
-    .eq("email", user.email)
+    .eq("email", email)
     .eq("active", true)
     .maybeSingle()
 
-  return { user, admin, configured: true }
+  return { user: admin ? { email } : null, admin, configured: true }
 }
 
 export async function listAdminEntries(collection: CmsCollection) {
-  const supabase = await createSupabaseServerClient()
+  const supabase = createSupabaseAdminClient()
 
   if (!supabase) return []
 
@@ -180,7 +178,7 @@ export async function getPublishedEntry(collection: CmsCollection, slug: string)
 }
 
 export async function listMediaAssets() {
-  const supabase = await createSupabaseServerClient()
+  const supabase = createSupabaseAdminClient()
 
   if (!supabase) return []
 

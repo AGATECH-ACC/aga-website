@@ -3,13 +3,14 @@
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
-import { createSupabaseServerClient } from "@/lib/supabase/server"
+import { createSupabaseAdminClient } from "@/lib/supabase/admin"
 
+import { clearAdminSession, createAdminSession, hasAdminPasscodeConfig } from "./admin-session"
 import { getCurrentAdmin } from "./db"
 import type { CmsCollection, CmsLocale } from "./types"
 
 async function requireAdminClient() {
-  const supabase = await createSupabaseServerClient()
+  const supabase = createSupabaseAdminClient()
   const { admin } = await getCurrentAdmin()
 
   if (!supabase || !admin) {
@@ -29,30 +30,37 @@ function parseJson(value: FormDataEntryValue | null) {
   }
 }
 
-export async function sendLoginLink(formData: FormData) {
+export async function signInAdmin(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim().toLowerCase()
-  const supabase = await createSupabaseServerClient()
+  const passcode = String(formData.get("passcode") ?? "")
+  const supabase = createSupabaseAdminClient()
 
-  if (!supabase || !email) {
+  if (!supabase || !hasAdminPasscodeConfig()) {
     redirect("/admin/login?status=missing-config")
   }
 
-  const origin = String(formData.get("origin") ?? "")
-  const redirectTo = `${origin || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3001"}/auth/callback?next=/admin`
+  if (!email || passcode !== process.env.ADMIN_PASSCODE) {
+    redirect("/admin/login?status=invalid")
+  }
 
-  await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: redirectTo,
-    },
-  })
+  const { data: admin } = await supabase
+    .schema("cms")
+    .from("admin_users")
+    .select("email, role, active")
+    .eq("email", email)
+    .eq("active", true)
+    .maybeSingle()
 
-  redirect("/admin/login?status=check-email")
+  if (!admin) {
+    redirect("/admin/login?status=unauthorized")
+  }
+
+  await createAdminSession(email)
+  redirect("/admin")
 }
 
 export async function signOutAdmin() {
-  const supabase = await createSupabaseServerClient()
-  await supabase?.auth.signOut()
+  await clearAdminSession()
   redirect("/admin/login")
 }
 

@@ -22,8 +22,8 @@ export default async function ProtectedAdminLayout({
           </CardHeader>
           <CardContent className="text-sm leading-6 text-muted-foreground">
             Add `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and
-            `SUPABASE_SERVICE_ROLE_KEY`, then run the SQL in
-            `supabase/cms_schema.sql`.
+            `SUPABASE_SERVICE_ROLE_KEY`, plus `ADMIN_PASSCODE` and
+            `ADMIN_SESSION_SECRET`, then run the SQL in `supabase/cms_schema.sql`.
           </CardContent>
         </Card>
       </main>
