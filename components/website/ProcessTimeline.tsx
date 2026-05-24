@@ -18,6 +18,7 @@ type ProcessTimelineProps = {
     label: string
     steps: ProcessStep[]
   }>
+  productLabel?: string
   visualLabel?: string
 }
 
@@ -25,32 +26,33 @@ export function ProcessTimeline({
   steps = [
     {
       step: "01",
-      title: { en: "Consult", zh: "咨询" },
-      description: { en: "Understand workflows.", zh: "深入了解业务模式。" },
+      title: { en: "Consult" },
+      description: { en: "Understand workflows." },
     },
     {
       step: "02",
-      title: { en: "Design", zh: "设计" },
-      description: { en: "Shape the system.", zh: "定制可扩展后台系统。" },
+      title: { en: "Design" },
+      description: { en: "Shape the system." },
     },
     {
       step: "03",
-      title: { en: "Build", zh: "构建" },
-      description: { en: "Automate operations.", zh: "用 AI 自动化系统化部门。" },
+      title: { en: "Build" },
+      description: { en: "Automate operations." },
     },
     {
       step: "04",
-      title: { en: "Train", zh: "培训" },
-      description: { en: "Enable the team.", zh: "让团队熟练使用系统。" },
+      title: { en: "Train" },
+      description: { en: "Enable the team." },
     },
     {
       step: "05",
-      title: { en: "Support", zh: "支持" },
-      description: { en: "Improve long-term.", zh: "长期合作与系统升级。" },
+      title: { en: "Support" },
+      description: { en: "Improve long-term." },
     },
   ],
   tabs,
-  visualLabel = "Process image area / 流程图片区域",
+  productLabel = "Product",
+  visualLabel = "Process image area",
 }: ProcessTimelineProps) {
   const fallbackTabs = useMemo(
     () => [
@@ -66,22 +68,27 @@ export function ProcessTimeline({
 
   return (
     <div className="flex flex-col gap-10">
-      <div className="flex flex-wrap justify-center gap-3">
-        {timelineTabs.map((item, index) => (
-          <button
-            key={item.label}
-            type="button"
-            onClick={() => setActiveTab(index)}
-            className={cn(
-              "rounded-full px-5 py-2 text-sm font-semibold transition-colors",
-              index === activeTab
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "bg-muted text-muted-foreground hover:bg-system/10 hover:text-system"
-            )}
-          >
-            {item.label}
-          </button>
-        ))}
+      <div className="flex flex-col items-center gap-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-system">
+          {productLabel}
+        </p>
+        <div className="flex flex-wrap justify-center gap-3">
+          {timelineTabs.map((item, index) => (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => setActiveTab(index)}
+              className={cn(
+                "rounded-full px-5 py-2 text-sm font-semibold transition-colors",
+                index === activeTab
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-muted text-muted-foreground hover:bg-system/10 hover:text-system"
+              )}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="relative grid gap-8 md:grid-cols-3 md:items-start">

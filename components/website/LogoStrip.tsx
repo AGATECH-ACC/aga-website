@@ -10,7 +10,7 @@ type LogoStripProps = {
 }
 
 export function LogoStrip({
-  label = { en: "Trusted by growing teams", zh: "来自优质品牌的信任" },
+  label = { en: "Trusted by growing teams" },
   logos = ["LOGO", "LUMI", "IPSM", "BOGO", "WAVE", "NOVA"],
 }: LogoStripProps) {
   return (

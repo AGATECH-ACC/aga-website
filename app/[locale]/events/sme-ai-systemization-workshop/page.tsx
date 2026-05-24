@@ -63,6 +63,7 @@ export default async function EventPage({ params }: PageProps) {
       path={`/${locale}/events/sme-ai-systemization-workshop`}
     >
       <InnerPage
+        locale={locale}
         eyebrow={eventPage.eyebrow}
         title={eventPage.title}
         accent={eventPage.accent}

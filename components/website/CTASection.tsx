@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react"
+import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -12,16 +13,17 @@ type CTASectionProps = {
   description?: WebsiteText
   action?: WebsiteText
   trustLine?: WebsiteText
+  actionHref?: string
 }
 
 export function CTASection({
-  title = { en: "Ready to systemize your business?", zh: "准备好开始系统化了吗？" },
+  title = { en: "Ready to systemize your business?" },
   description = {
     en: "Use one strong system foundation before scaling new teams and workflows.",
-    zh: "在扩展团队与流程前，先建立一个强大的系统基础。",
   },
-  action = { en: "Book demo", zh: "预约免费演示" },
-  trustLine = { en: "Start with one business diagnosis to identify your system and automation opportunities.", zh: "从一次业务诊断开始，找出你的系统化与自动化机会。" },
+  action = { en: "Book demo" },
+  trustLine = { en: "Start with one business diagnosis to identify your system and automation opportunities." },
+  actionHref = "https://client.agaventures.ai/enquiry",
 }: CTASectionProps) {
   return (
     <WebsiteContainer>
@@ -44,9 +46,11 @@ export function CTASection({
               <BilingualText text={trustLine} />
             </p>
           </div>
-          <Button size="lg" variant="primary">
-            <BilingualText text={action} />
-            <ArrowRight data-icon="inline-end" />
+          <Button asChild size="lg" variant="primary">
+            <Link href={actionHref}>
+              <BilingualText text={action} />
+              <ArrowRight data-icon="inline-end" />
+            </Link>
           </Button>
         </div>
       </section>

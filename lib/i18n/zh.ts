@@ -19,33 +19,33 @@ export const zh = {
     ctaHref: "/zh/contact",
     groups: [
       {
-        label: "产品",
+        label: "服务",
         href: "/zh/services",
         children: [
           {
-            label: "AGA Flow",
-            description: "梳理部门流程、审批与任务标准。",
-            href: "/zh/services/business-systemization",
+            label: "OneSystem™",
+            description: "为 SME 打造的一套企业运营系统。",
+            href: "/zh/services/one-system",
           },
           {
-            label: "AGA Workflow",
-            description: "Lark / ERP 工作流搭建，轻量可扩展。",
-            href: "/zh/services/lark-erp-workflow",
+            label: "OneIntelligence™",
+            description: "从企业系统学习的 AI 智能层。",
+            href: "/zh/services/one-intelligence",
           },
           {
-            label: "AGA Sales",
-            description: "线索、跟进、报价与成交，集中管理。",
-            href: "/zh/services/sales-crm",
+            label: "Workflow Registry",
+            description: "把所有流程整理在一个地方。",
+            href: "/zh/services/workflow-registry",
           },
           {
-            label: "AGA Finance",
-            description: "收入、成本、现金流，老板一眼看清。",
-            href: "/zh/services/finance-reporting",
+            label: "Business DNA™",
+            description: "把企业独特的运作方式编码成系统。",
+            href: "/zh/services/business-dna",
           },
           {
-            label: "AGA AI",
-            description: "自动化重复任务，部署 AI Agent。",
-            href: "/zh/services/ai-automation-agent",
+            label: "Cortex",
+            description: "系统背后的技术引擎。",
+            href: "/zh/services/cortex",
           },
         ],
       },
@@ -80,6 +80,7 @@ export const zh = {
           },
         ],
       },
+      { label: "观点文章", href: "/zh/insights" },
       { label: "案例", href: "/zh/case-studies" },
       { label: "关于我们", href: "/zh/about" },
     ],
@@ -145,45 +146,115 @@ export const zh = {
     title: "一个平台，",
     accent: "覆盖企业所有系统需求。",
     description:
-      "从你今天最需要的模块开始，随着业务增长逐步扩展。每个 AGA 产品都可以单独启动，也可以完整整合。",
+      "从你今天最需要的模块开始，随着业务增长逐步扩展。每个 AGA 服务模块都可以单独启动，也可以完整整合。",
     products: [
       {
-        name: "AGA Flow",
-        tagline: "企业流程系统化",
-        description: "梳理部门流程、审批、任务与文件管理，让日常工作有清晰标准。",
-        href: "/zh/services/business-systemization",
-        visualKind: "workflow",
-      },
-      {
-        name: "AGA Workflow",
-        tagline: "Lark / ERP 工作流搭建",
-        description: "根据企业实际运作方式，搭建轻量、可扩展的工作流系统。",
-        href: "/zh/services/lark-erp-workflow",
+        name: "OneSystem™",
+        tagline: "为 SME 打造的一套企业运营系统",
+        description: "OneSystem 把流程、审批、仪表盘、客户、任务与团队执行连接成一套企业系统。",
+        href: "/zh/services/one-system",
         visualKind: "operations",
+        details: [
+          {
+            title: "连接部门",
+            description: "把销售、运营、财务、服务与管理流程整理成同一套运营结构。",
+          },
+          {
+            title: "执行日常工作",
+            description: "团队在同一个系统里处理任务、审批、提醒与仪表盘。",
+          },
+          {
+            title: "让老板看得见",
+            description: "老板无需逐个追问，也能看清卡点、负责人、跟进状态与业务健康度。",
+          },
+        ],
       },
       {
-        name: "AGA Sales",
-        tagline: "销售与客户管理系统",
-        description: "集中管理线索、客户、跟进、报价与成交进度。",
-        href: "/zh/services/sales-crm",
-        visualKind: "sales",
-      },
-      {
-        name: "AGA Finance",
-        tagline: "财务与管理报表",
-        description: "让老板更清楚掌握收入、成本、现金流与团队执行数据。",
-        href: "/zh/services/finance-reporting",
-        visualKind: "finance",
-      },
-      {
-        name: "AGA AI",
-        tagline: "AI 自动化与 AI Agent",
-        description: "自动处理重复任务，规划能协助团队执行的 AI 工作流程。",
-        href: "/zh/services/ai-automation-agent",
+        name: "OneIntelligence™",
+        tagline: "从企业系统学习的 AI 智能层",
+        description: "OneIntelligence 把运营数据变成总结、建议、提醒与 AI 辅助执行，并随着使用越来越聪明。",
+        href: "/zh/services/one-intelligence",
         visualKind: "ai",
+        details: [
+          {
+            title: "读取业务信号",
+            description: "从任务、流程记录、销售动作、审批与运营模式中学习。",
+          },
+          {
+            title: "辅助决策",
+            description: "自动生成总结、提醒、下一步建议与管理预警。",
+          },
+          {
+            title: "每月变聪明",
+            description: "越多流程进入 OneSystem，OneIntelligence 的上下文越完整，建议越精准。",
+          },
+        ],
+      },
+      {
+        name: "Workflow Registry",
+        tagline: "把所有流程整理在一个地方",
+        description: "Workflow Registry 是企业流程清单，记录工作如何发生、谁负责、什么触发、哪里卡住。",
+        href: "/zh/services/workflow-registry",
+        visualKind: "workflow",
+        details: [
+          {
+            title: "列出流程",
+            description: "记录每个流程、负责人、触发条件、交接、审批与结果。",
+          },
+          {
+            title: "看见缺口",
+            description: "找出重复工作、缺少负责人、审批太慢与跟进不清楚的地方。",
+          },
+          {
+            title: "准备自动化",
+            description: "流程被登记后，就能进一步变成系统、仪表盘与自动化规则。",
+          },
+        ],
+      },
+      {
+        name: "Business DNA™",
+        tagline: "把企业独特的运作方式编码成系统",
+        description: "Business DNA 捕捉企业如何销售、服务、审批、汇报与做决定的独特方式。",
+        href: "/zh/services/business-dna",
+        visualKind: "workflow",
+        details: [
+          {
+            title: "理解业务逻辑",
+            description: "整理决策方式、特殊情况、优先级、角色与公司真正的工作习惯。",
+          },
+          {
+            title: "变成系统结构",
+            description: "把这些逻辑转成字段、状态、流程、仪表盘与权限规则。",
+          },
+          {
+            title: "保护扩张方式",
+            description: "团队扩大后，公司仍保留自己的运营 DNA，而不是只靠记忆和关键员工。",
+          },
+        ],
+      },
+      {
+        name: "Cortex",
+        tagline: "系统背后的技术引擎",
+        description: "Cortex 是连接数据、权限、自动化、集成与 AI 动作的后台技术引擎。",
+        href: "/zh/services/cortex",
+        visualKind: "finance",
+        details: [
+          {
+            title: "连接基础设施",
+            description: "整合数据库、API、权限、队列、自动化与第三方工具。",
+          },
+          {
+            title: "驱动流程",
+            description: "支撑审批、通知、报表、自动化与 AI 动作背后的逻辑。",
+          },
+          {
+            title: "保持可扩展",
+            description: "随着部门、模块与数据增加，企业仍有可扩展的后台基础。",
+          },
+        ],
       },
     ],
-    cta: "查看所有产品",
+    cta: "查看所有服务",
   },
   industriesSection: {
     eyebrow: "行业方案",
@@ -227,28 +298,29 @@ export const zh = {
     ],
   },
   processSection: {
-    eyebrow: "AGA Speed",
-    title: "更快数码化，",
-    accent: "用更少时间完成更多",
-    visualLabel: "用 AGA 系统、自动化与 AI Agent，在更短时间完成更多数字化工作。",
+    eyebrow: "产品",
+    title: "每个产品，",
+    accent: "都有清楚的运作方式",
+    productLabel: "产品",
+    visualLabel: "选择一个产品，了解它如何从业务资料变成日常执行系统。",
     tabs: [
       {
         label: "AGA Flow",
         steps: [
           {
             step: "01",
-            title: "今天",
-            description: "梳理现有流程、负责人、工具与审批卡点。",
+            title: "梳理",
+            description: "把流程、负责人、审批、SOP 与卡点整理成一张运营地图。",
           },
           {
             step: "02",
-            title: "数小时后",
-            description: "配置系统模块、自动化规则、仪表盘与 AI 任务流。",
+            title: "系统化",
+            description: "转成任务看板、审批规则、交接步骤与团队仪表盘。",
           },
           {
             step: "03",
-            title: "明天",
-            description: "团队拥有更清晰流程、更快跟进与更高管理可视化。",
+            title: "执行",
+            description: "团队每天按系统执行，责任更清楚、跟进更少漏、老板看得见。",
           },
         ],
       },
@@ -257,18 +329,18 @@ export const zh = {
         steps: [
           {
             step: "01",
-            title: "今天",
-            description: "梳理线索来源、销售负责人、报价状态与跟进断点。",
+            title: "收集",
+            description: "集中线索、客户资料、来源、报价状态与下一步行动。",
           },
           {
             step: "02",
-            title: "数小时后",
-            description: "配置销售阶段、提醒、客户资料与老板仪表盘。",
+            title: "管理",
+            description: "用销售阶段、提醒、负责人和客户记录推动每个机会。",
           },
           {
             step: "03",
-            title: "明天",
-            description: "销售团队跟进更快，机会、报价与成交进度更清楚。",
+            title: "成交",
+            description: "老板看清跟进健康度、成交金额、报价进度与销售动作。",
           },
         ],
       },
@@ -277,18 +349,18 @@ export const zh = {
         steps: [
           {
             step: "01",
-            title: "今天",
-            description: "找出重复任务、判断节点与手动整理报表的工作。",
+            title: "识别",
+            description: "找出重复工作、报表需求、消息模式与审批触发点。",
           },
           {
             step: "02",
-            title: "数小时后",
-            description: "连接触发条件、提示词、审批与 AI Agent 执行动作。",
+            title: "自动化",
+            description: "把提示词、工具、规则与 AI Agent 动作连接到流程节点。",
           },
           {
             step: "03",
-            title: "明天",
-            description: "AI Agent 协助日常执行、提醒、报表与团队跟进。",
+            title: "协助",
+            description: "AI 协助提醒、总结、初稿、报表与日常团队跟进。",
           },
         ],
       },
@@ -335,8 +407,9 @@ export const zh = {
     address: "Damansara Utama, Petaling Jaya, Selangor",
     navItems: [
       { label: "首页", href: "/zh" },
-      { label: "产品", href: "/zh/services" },
+      { label: "服务", href: "/zh/services" },
       { label: "行业方案", href: "/zh/solutions" },
+      { label: "观点文章", href: "/zh/insights" },
       { label: "案例", href: "/zh/case-studies" },
       { label: "关于我们", href: "/zh/about" },
       { label: "联系", href: "/zh/contact" },

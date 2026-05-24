@@ -1,5 +1,6 @@
 import { Upload } from "lucide-react"
 
+import { MediaLibraryGrid } from "@/components/admin/MediaLibraryGrid"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -28,7 +29,7 @@ export default async function AdminMediaPage() {
           <form action={uploadCmsMedia} className="grid gap-4 md:grid-cols-[1fr_12rem_1fr_1fr_auto]">
             <Input name="file" type="file" required />
             <select name="collection" className="h-8 rounded-lg border border-input bg-background px-2.5 text-sm">
-              <option value="products">products</option>
+              <option value="products">services</option>
               <option value="industries">industries</option>
               <option value="case-studies">case-studies</option>
               <option value="events">events</option>
@@ -45,29 +46,7 @@ export default async function AdminMediaPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {assets.length ? (
-          assets.map((asset) => (
-            <Card key={asset.id}>
-              <div className="aspect-video overflow-hidden rounded-t-xl bg-muted">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={asset.publicUrl} alt={asset.altText} className="h-full w-full object-cover" />
-              </div>
-              <CardContent className="flex flex-col gap-2 p-4 text-sm">
-                <p className="font-semibold">{asset.altText || asset.path}</p>
-                <p className="break-all text-muted-foreground">{asset.publicUrl}</p>
-                <Badge className="w-fit" variant="outline">{asset.collection ?? "media"}</Badge>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <Card>
-            <CardContent className="p-8 text-muted-foreground">
-              No media uploaded yet.
-            </CardContent>
-          </Card>
-        )}
-      </div>
+      <MediaLibraryGrid assets={assets} />
     </div>
   )
 }

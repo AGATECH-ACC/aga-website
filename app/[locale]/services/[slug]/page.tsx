@@ -44,6 +44,16 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     notFound()
   }
 
+  const cards = product.details?.length
+    ? product.details.map((detail) => ({
+        title: detail.title,
+        description: detail.description,
+      }))
+    : dictionary.processSection.steps.slice(0, 3).map((step) => ({
+        title: step.title,
+        description: step.description,
+      }))
+
   return (
     <LocalizedShell locale={locale} path={`/${locale}/services/${slug}`}>
       <InnerPage
@@ -53,10 +63,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
         description={product.description}
         parentHref={`/${locale}/services`}
         parentLabel={dictionary.pages.services.backLabel}
-        cards={dictionary.processSection.steps.slice(0, 3).map((step) => ({
-          title: step.title,
-          description: step.description,
-        }))}
+        cards={cards}
       />
     </LocalizedShell>
   )

@@ -36,23 +36,22 @@ type ServiceModuleTabsProps = {
 export function ServiceModuleTabs({
   modules = [
     {
-      title: { en: "Business systems", zh: "业务系统" },
+      title: { en: "Business systems" },
       description: {
         en: "Automated cross-team workflows and approvals.",
-        zh: "自动化跨团队任务流、审批与文档管理。",
       },
     },
     {
-      title: { en: "Sales and customers", zh: "销售与客户管理" },
-      description: { en: "CRM and customer visibility.", zh: "客户关系与销售流程可视化。" },
+      title: { en: "Sales and customers" },
+      description: { en: "CRM and customer visibility." },
     },
     {
-      title: { en: "Marketing automation", zh: "营销自动化" },
-      description: { en: "Repeatable campaigns and journeys.", zh: "可复用活动与客户旅程。" },
+      title: { en: "Marketing automation" },
+      description: { en: "Repeatable campaigns and journeys." },
     },
     {
-      title: { en: "Finance and budgets", zh: "财务与预算" },
-      description: { en: "Reporting and planning systems.", zh: "报表、预算与计划系统。" },
+      title: { en: "Finance and budgets" },
+      description: { en: "Reporting and planning systems." },
     },
   ],
   visualNote = "System modules stay reusable across service, solution, and event pages.",

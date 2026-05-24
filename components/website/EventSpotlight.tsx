@@ -30,11 +30,11 @@ export function EventSpotlight({
   }
 
   return (
-    <section className="relative border-b bg-foreground text-background">
+    <section className="sticky top-0 z-[60] border-b bg-foreground text-background shadow-lg">
       <div
         className={cn(
           websiteClasses.container,
-          "flex flex-col gap-4 py-4 pr-14 md:flex-row md:items-center md:justify-between"
+          "flex flex-col gap-4 py-4 md:flex-row md:items-center md:justify-between"
         )}
       >
         <div className="flex items-start gap-3">
@@ -53,21 +53,23 @@ export function EventSpotlight({
             </p>
           </div>
         </div>
-        <Button asChild size="sm" className="bg-background text-foreground hover:bg-background/90">
-          <Link href={href}>
-            {action}
-            <ArrowRight data-icon="inline-end" />
-          </Link>
-        </Button>
+        <div className="flex shrink-0 items-center gap-3 self-start md:self-center">
+          <Button asChild size="sm" className="bg-background text-foreground hover:bg-background/90">
+            <Link href={href}>
+              {action}
+              <ArrowRight data-icon="inline-end" />
+            </Link>
+          </Button>
+          <button
+            type="button"
+            aria-label="Close spotlight event"
+            onClick={() => setVisible(false)}
+            className="grid size-8 place-items-center rounded-full border border-background/15 text-background/70 transition-colors hover:bg-background/10 hover:text-background"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
       </div>
-      <button
-        type="button"
-        aria-label="Close spotlight event"
-        onClick={() => setVisible(false)}
-        className="absolute right-4 top-4 grid size-8 place-items-center rounded-full border border-background/15 text-background/70 transition-colors hover:bg-background/10 hover:text-background"
-      >
-        <X className="size-4" />
-      </button>
     </section>
   )
 }

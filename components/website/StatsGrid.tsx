@@ -10,6 +10,8 @@ import { BilingualText, type WebsiteText } from "./shared"
 
 type StatItem = {
   value: string
+  target?: number
+  suffix?: string
   label: WebsiteText
 }
 
@@ -19,9 +21,9 @@ type StatsGridProps = {
 
 export function StatsGrid({
   stats = [
-    { value: "50+", label: { en: "Delivered projects", zh: "已交付项目" } },
-    { value: "70%", label: { en: "Growth average", zh: "平均业务增长" } },
-    { value: "200+", label: { en: "Hours saved monthly", zh: "每月节省人时" } },
+    { value: "50+", label: { en: "Delivered projects" } },
+    { value: "70%", label: { en: "Growth average" } },
+    { value: "200+", label: { en: "Hours saved monthly" } },
   ],
 }: StatsGridProps) {
   return (
@@ -30,7 +32,7 @@ export function StatsGrid({
         <Card key={stat.value} className={cn("text-center", motionClasses.scaleIn)}>
           <CardContent className="flex flex-col items-center gap-2 py-6">
             <div className="text-4xl font-semibold tracking-normal text-system md:text-5xl">
-              <AnimatedStatValue value={stat.value} />
+              <AnimatedStatValue value={stat.value} target={stat.target} suffix={stat.suffix} />
             </div>
             <p className="text-sm leading-5 text-muted-foreground">
               <BilingualText text={stat.label} />
@@ -42,19 +44,19 @@ export function StatsGrid({
   )
 }
 
-function AnimatedStatValue({ value }: { value: string }) {
+function AnimatedStatValue({ value, target, suffix }: { value: string; target?: number; suffix?: string }) {
   const parsed = /^(\d+)(.*)$/.exec(value)
-  const target = parsed ? Number(parsed[1]) : 0
-  const suffix = parsed?.[2] ?? ""
+  const animationTarget = target ?? (parsed ? Number(parsed[1]) : 0)
+  const displaySuffix = suffix ?? parsed?.[2] ?? ""
   const [count, setCount] = useState(0)
 
   useEffect(() => {
-    if (!target) {
+    if (!animationTarget) {
       return
     }
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      const reducedMotionFrame = requestAnimationFrame(() => setCount(target))
+      const reducedMotionFrame = requestAnimationFrame(() => setCount(animationTarget))
 
       return () => cancelAnimationFrame(reducedMotionFrame)
     }
@@ -67,7 +69,7 @@ function AnimatedStatValue({ value }: { value: string }) {
       const progress = Math.min((now - start) / duration, 1)
       const eased = 1 - Math.pow(1 - progress, 3)
 
-      setCount(Math.round(target * eased))
+      setCount(Math.round(animationTarget * eased))
 
       if (progress < 1) {
         frame = requestAnimationFrame(tick)
@@ -77,16 +79,16 @@ function AnimatedStatValue({ value }: { value: string }) {
     frame = requestAnimationFrame(tick)
 
     return () => cancelAnimationFrame(frame)
-  }, [target])
+  }, [animationTarget])
 
-  if (!parsed) {
+  if (!parsed && target === undefined) {
     return value
   }
 
   return (
     <>
       {count}
-      {suffix}
+      {displaySuffix}
     </>
   )
 }

@@ -1,6 +1,8 @@
 import type { ReactNode } from "react"
 
 import { SiteFooter, SiteNavbar } from "@/components/website"
+import { getCmsIndustries, getCmsProducts } from "@/lib/cms/public-content"
+import { buildLocalizedNavGroups } from "@/lib/i18n/nav-groups"
 import { getAlternateLocale, getDictionary, type Locale } from "@/lib/i18n/dictionary"
 
 type LocalizedShellProps = {
@@ -9,27 +11,21 @@ type LocalizedShellProps = {
   children: ReactNode
 }
 
-export function LocalizedShell({ locale, path, children }: LocalizedShellProps) {
+export async function LocalizedShell({ locale, path, children }: LocalizedShellProps) {
   const dictionary = getDictionary(locale)
   const alternateLocale = getAlternateLocale(locale)
   const languageHref = path.replace(`/${locale}`, `/${alternateLocale}`)
+  const [services, industries] = await Promise.all([
+    getCmsProducts(locale, dictionary.productsSection.products, { includeFallback: false }),
+    getCmsIndustries(locale, dictionary.industriesSection.industries, { includeFallback: false }),
+  ])
 
   return (
     <main className="flex min-h-screen flex-col bg-background text-foreground">
       <SiteNavbar
         logoLabel={dictionary.nav.logoLabel}
         logoHref={dictionary.nav.logoHref}
-        navGroups={dictionary.nav.groups.map((group) => ({
-          label: group.label,
-          href: "href" in group ? group.href : undefined,
-          children: "children" in group
-            ? group.children.map((child) => ({
-                label: child.label,
-                description: "description" in child ? child.description : undefined,
-                href: child.href,
-              }))
-            : undefined,
-        }))}
+        navGroups={buildLocalizedNavGroups({ dictionary, services, industries })}
         cta={dictionary.nav.cta}
         ctaHref={dictionary.nav.ctaHref}
         languageHref={languageHref}

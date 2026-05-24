@@ -26,6 +26,7 @@ export default async function ServicesPage({ params }: PageProps) {
   return (
     <LocalizedShell locale={locale} path={`/${locale}/services`}>
       <InnerPage
+        locale={locale}
         eyebrow={dictionary.pages.services.eyebrow}
         title={dictionary.pages.services.title}
         accent={dictionary.pages.services.accent}

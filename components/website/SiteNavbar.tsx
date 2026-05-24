@@ -31,6 +31,10 @@ type SiteNavbarProps = {
   variant?: "transparent" | "solid"
 }
 
+function isZhHref(href?: string) {
+  return href?.startsWith("/zh") ?? false
+}
+
 export function SiteNavbar({
   logoLabel = "AGA",
   logoHref = "/",
@@ -38,12 +42,17 @@ export function SiteNavbar({
   cta = "Book demo",
   ctaHref,
   languageHref,
-  languageLabel = "中文 / EN",
+  languageLabel = "CN/EN",
   variant = "solid",
 }: SiteNavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openGroup, setOpenGroup] = useState<string | null>(null)
   const isTransparent = variant === "transparent"
+  const isZh = isZhHref(logoHref)
+  const dropdownDescription = isZh
+    ? "探索 AGA 服务、行业方案与落地路径。"
+    : "Explore AGA modules, industries, and implementation directions."
+  const viewAllLabel = isZh ? "查看全部" : "View all"
 
   return (
     <header
@@ -79,7 +88,6 @@ export function SiteNavbar({
                 key={group.label}
                 className="group relative"
                 onMouseEnter={() => setOpenGroup(group.label)}
-                onMouseLeave={() => setOpenGroup(null)}
               >
                 <button
                   type="button"
@@ -118,15 +126,16 @@ export function SiteNavbar({
                         {group.label}
                       </p>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        Explore AGA modules, industries, and implementation directions.
+                        {dropdownDescription}
                       </p>
                     </div>
                     {group.href ? (
                       <Link
                         href={group.href}
+                        onClick={() => setOpenGroup(null)}
                         className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
                       >
-                        View all
+                        {viewAllLabel}
                         <ArrowUpRight className="size-4" />
                       </Link>
                     ) : null}
@@ -136,6 +145,7 @@ export function SiteNavbar({
                       <Link
                         key={child.href}
                         href={child.href}
+                        onClick={() => setOpenGroup(null)}
                         className="flex min-h-24 flex-col gap-1 rounded-xl border bg-muted/20 px-4 py-3 transition-colors hover:border-primary/40 hover:bg-primary/10"
                       >
                         <span className="text-sm font-semibold text-foreground">
@@ -152,9 +162,10 @@ export function SiteNavbar({
                   {group.href ? (
                     <Link
                       href={group.href}
+                      onClick={() => setOpenGroup(null)}
                       className="mt-3 flex items-center justify-between rounded-xl border border-border px-3 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
                     >
-                      View all {group.label}
+                      {viewAllLabel} {group.label}
                       <ChevronDown className="-rotate-90 size-3.5" />
                     </Link>
                   ) : null}
@@ -186,7 +197,7 @@ export function SiteNavbar({
           )}
           {ctaHref ? (
             <Button asChild variant="primary" size="sm">
-              <Link href={ctaHref} target={ctaHref.startsWith("http") ? "_blank" : undefined}>
+              <Link href={ctaHref}>
                 {cta}
               </Link>
             </Button>
@@ -234,7 +245,7 @@ export function SiteNavbar({
                           onClick={() => setMobileOpen(false)}
                           className="mb-1 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-primary hover:bg-muted"
                         >
-                          View all {group.label}
+                          {viewAllLabel} {group.label}
                           <ArrowUpRight className="size-3.5" />
                         </Link>
                       ) : null}
@@ -280,7 +291,6 @@ export function SiteNavbar({
                   <Link
                     href={ctaHref}
                     onClick={() => setMobileOpen(false)}
-                    target={ctaHref.startsWith("http") ? "_blank" : undefined}
                   >
                     {cta}
                   </Link>

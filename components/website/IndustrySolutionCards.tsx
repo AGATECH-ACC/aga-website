@@ -29,17 +29,17 @@ type IndustrySolutionCardsProps = {
 
 export function IndustrySolutionCards({
   industries = [
-    { title: { en: "Accounting", zh: "会计师事务所" } },
-    { title: { en: "Manufacturing", zh: "制造业" } },
-    { title: { en: "Real estate", zh: "房产中介" } },
+    { title: { en: "Accounting" } },
+    { title: { en: "Manufacturing" } },
+    { title: { en: "Real estate" } },
     {
-      title: { en: "F&B chains", zh: "餐饮连锁" },
-      description: { en: "Inventory, staffing, finance.", zh: "库存、人力、财务统一管理。" },
+      title: { en: "F&B chains" },
+      description: { en: "Inventory, staffing, finance." },
       active: true,
     },
-    { title: { en: "Retail", zh: "零售与电商" } },
+    { title: { en: "Retail" } },
   ],
-  ctaLabel = { en: "Learn more", zh: "了解详情" },
+  ctaLabel = { en: "Learn more" },
 }: IndustrySolutionCardsProps) {
   return (
     <div className="grid gap-3 md:grid-cols-5">

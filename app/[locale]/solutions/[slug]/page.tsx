@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 
 import { getDictionary, isLocale, locales, type Locale } from "@/lib/i18n/dictionary"
 import { getCmsIndustry, getCmsProducts } from "@/lib/cms/public-content"
+import { getSolutionBlueprint } from "@/lib/solutions/blueprints"
 
 import { InnerPage } from "../../_components/InnerPage"
 import { LocalizedShell } from "../../_components/LocalizedShell"
@@ -40,6 +41,7 @@ export default async function SolutionDetailPage({ params }: PageProps) {
   )
   const industry = cmsIndustry ?? fallbackIndustry
   const products = await getCmsProducts(locale, dictionary.productsSection.products)
+  const blueprint = getSolutionBlueprint(locale, slug)
 
   if (!industry) {
     notFound()
@@ -54,11 +56,15 @@ export default async function SolutionDetailPage({ params }: PageProps) {
         description={industry.description}
         parentHref={`/${locale}/solutions`}
         parentLabel={dictionary.pages.solutions.backLabel}
-        cards={products.slice(0, 3).map((product) => ({
-          title: product.name + " — " + product.tagline,
-          description: product.description,
-          href: product.href,
-        }))}
+        cards={
+          blueprint?.modules.length
+            ? blueprint.modules
+            : products.slice(0, 3).map((product) => ({
+                title: product.name + " — " + product.tagline,
+                description: product.description,
+                href: product.href,
+              }))
+        }
       />
     </LocalizedShell>
   )

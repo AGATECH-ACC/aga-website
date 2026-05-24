@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card"
 import {
   CTASection,
+  DiagnosisBreakdownSection,
   EventSpotlight,
   HeroSection,
   IndustrySolutionCards,
@@ -21,6 +22,7 @@ import {
   SiteNavbar,
   SocialProofStrip,
   StatsGrid,
+  TestimonialsSection,
   WebsiteContainer,
   WebsiteSection,
 } from "@/components/website"
@@ -31,6 +33,8 @@ import {
   locales,
   type Locale,
 } from "@/lib/i18n/dictionary"
+import { buildLocalizedNavGroups } from "@/lib/i18n/nav-groups"
+import { getSiteStats, listLogoAssets, listTestimonials } from "@/lib/cms/db"
 import { getCmsEvent, getCmsIndustries, getCmsProducts } from "@/lib/cms/public-content"
 
 export const revalidate = 60
@@ -93,38 +97,22 @@ export default async function LocaleHomePage({ params }: LocalePageProps) {
 
   const locale: Locale = localeParam
   const dictionary = getDictionary(locale)
-  const [products, industries, eventPage] = await Promise.all([
+  const [products, industries, navProducts, navIndustries, eventPage, siteStats, logos, testimonials] = await Promise.all([
     getCmsProducts(locale, dictionary.productsSection.products),
     getCmsIndustries(locale, dictionary.industriesSection.industries),
+    getCmsProducts(locale, dictionary.productsSection.products, { includeFallback: false }),
+    getCmsIndustries(locale, dictionary.industriesSection.industries, { includeFallback: false }),
     getCmsEvent(locale, "sme-ai-systemization-workshop", dictionary.eventPage),
+    getSiteStats(),
+    listLogoAssets({ activeOnly: true }),
+    listTestimonials({ activeOnly: true }),
   ])
   const alternateLocale = getAlternateLocale(locale)
   const languageHref = `/${alternateLocale}`
+  const navGroups = buildLocalizedNavGroups({ dictionary, services: navProducts, industries: navIndustries })
 
   return (
     <main className="flex min-h-screen flex-col bg-background text-foreground">
-
-      {/* ── Navbar ── */}
-      <SiteNavbar
-        logoLabel={dictionary.nav.logoLabel}
-        logoHref={dictionary.nav.logoHref}
-        navGroups={dictionary.nav.groups.map((group) => ({
-          label: group.label,
-          href: "href" in group ? group.href : undefined,
-          children: "children" in group
-            ? group.children.map((child) => ({
-                label: child.label,
-                description: "description" in child ? child.description : undefined,
-                href: child.href,
-              }))
-            : undefined,
-        }))}
-        cta={dictionary.nav.cta}
-        ctaHref={dictionary.nav.ctaHref}
-        languageHref={languageHref}
-        languageLabel={dictionary.nav.languageLabel}
-        variant="transparent"
-      />
 
       <EventSpotlight
         eyebrow={eventPage.eyebrow}
@@ -134,6 +122,18 @@ export default async function LocaleHomePage({ params }: LocalePageProps) {
         action={eventPage.actionLabel}
       />
 
+      {/* ── Navbar ── */}
+      <SiteNavbar
+        logoLabel={dictionary.nav.logoLabel}
+        logoHref={dictionary.nav.logoHref}
+        navGroups={navGroups}
+        cta={dictionary.nav.cta}
+        ctaHref={dictionary.nav.ctaHref}
+        languageHref={languageHref}
+        languageLabel={dictionary.nav.languageLabel}
+        variant="transparent"
+      />
+
       {/* ── Hero ── */}
       <HeroSection
         title={dictionary.hero.title}
@@ -141,13 +141,20 @@ export default async function LocaleHomePage({ params }: LocalePageProps) {
         description={dictionary.hero.description}
         primaryAction={dictionary.hero.primaryAction}
         secondaryAction={dictionary.hero.secondaryAction}
+        primaryActionHref={dictionary.nav.ctaHref}
+        secondaryActionHref={dictionary.hero.whatsappHref}
         visualNote={dictionary.hero.visualNote}
       />
 
       {/* ── Social proof strip ── */}
       <SocialProofStrip
         label={dictionary.socialProof.label}
-        logos={dictionary.socialProof.logos}
+        logos={logos.map((logo) => ({
+          id: logo.id,
+          name: logo.name,
+          imageUrl: logo.imageUrl,
+          linkUrl: logo.linkUrl,
+        }))}
       />
 
       {/* ── Why AGA trust cards ── */}
@@ -225,6 +232,8 @@ export default async function LocaleHomePage({ params }: LocalePageProps) {
         </WebsiteContainer>
       </WebsiteSection>
 
+      <TestimonialsSection locale={locale} testimonials={testimonials} />
+
       {/* ── How it works ── */}
       <WebsiteSection className="bg-muted/30">
         <WebsiteContainer className="flex flex-col gap-10">
@@ -247,6 +256,7 @@ export default async function LocaleHomePage({ params }: LocalePageProps) {
                 description: step.description,
               })),
             }))}
+            productLabel={dictionary.processSection.productLabel}
             visualLabel={dictionary.processSection.visualLabel}
           />
         </WebsiteContainer>
@@ -262,13 +272,26 @@ export default async function LocaleHomePage({ params }: LocalePageProps) {
             align="center"
           />
           <StatsGrid
-            stats={dictionary.statsSection.stats.map((stat) => ({
+            stats={dictionary.statsSection.stats.map((stat, index) => ({
               value: stat.value,
+              target: [
+                siteStats.statCounterAnalyses.number,
+                siteStats.statCounterAutomationPct.number,
+                siteStats.statCounterModules.number,
+              ][index],
+              suffix: [
+                siteStats.statCounterAnalyses.suffix,
+                siteStats.statCounterAutomationPct.suffix,
+                siteStats.statCounterModules.suffix,
+              ][index],
               label: stat.label,
             }))}
           />
         </WebsiteContainer>
       </WebsiteSection>
+
+      {/* ── CTA ── */}
+      <DiagnosisBreakdownSection locale={locale} />
 
       {/* ── CTA ── */}
       <WebsiteSection>

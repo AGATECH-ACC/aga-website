@@ -1,4 +1,5 @@
 export { CTASection } from "./CTASection"
+export { DiagnosisBreakdownSection } from "./DiagnosisBreakdownSection"
 export { FeatureGrid } from "./FeatureGrid"
 export { EventSpotlight } from "./EventSpotlight"
 export { HeroSection } from "./HeroSection"
@@ -12,6 +13,7 @@ export { SiteFooter } from "./SiteFooter"
 export { SiteNavbar } from "./SiteNavbar"
 export { SocialProofStrip } from "./SocialProofStrip"
 export { StatsGrid } from "./StatsGrid"
+export { TestimonialsSection } from "./TestimonialsSection"
 export {
   BilingualText,
   WebsiteContainer,

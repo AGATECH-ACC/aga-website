@@ -9,6 +9,7 @@ import {
 } from "@/components/website"
 
 type InnerPageProps = {
+  locale?: "en" | "zh"
   eyebrow: string
   title: string
   accent: string
@@ -24,6 +25,7 @@ type InnerPageProps = {
 }
 
 export function InnerPage({
+  locale = "en",
   eyebrow,
   title,
   accent,
@@ -83,7 +85,9 @@ export function InnerPage({
         ) : (
           <Card>
             <CardContent className="p-8 text-muted-foreground">
-              Content foundation is ready. Detailed content can be expanded from the website brain docs.
+              {locale === "zh"
+                ? "内容基础已准备好。详细内容可以从后台继续补充。"
+                : "Content foundation is ready. Detailed content can be expanded from the website brain docs."}
             </CardContent>
           </Card>
         )}

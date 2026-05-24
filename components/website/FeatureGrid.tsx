@@ -16,11 +16,11 @@ type FeatureGridProps = {
 
 export function FeatureGrid({
   features = [
-    { title: { en: "Built for SME growth", zh: "专为 SME 增长打造" }, icon: <BarChart3 data-icon="inline-start" /> },
-    { title: { en: "Launch in weeks", zh: "几周内即可上线" }, icon: <Clock3 data-icon="inline-start" /> },
-    { title: { en: "Business model fit", zh: "按业务模式定制" }, icon: <FileText data-icon="inline-start" /> },
-    { title: { en: "Mobile-first multilingual", zh: "移动优先、多语言" }, icon: <Globe2 data-icon="inline-start" /> },
-    { title: { en: "Integrated e-invoice systems", zh: "集成电子发票系统" }, icon: <Target data-icon="inline-start" />, wide: true },
+    { title: { en: "Built for SME growth" }, icon: <BarChart3 data-icon="inline-start" /> },
+    { title: { en: "Launch in weeks" }, icon: <Clock3 data-icon="inline-start" /> },
+    { title: { en: "Business model fit" }, icon: <FileText data-icon="inline-start" /> },
+    { title: { en: "Mobile-first multilingual" }, icon: <Globe2 data-icon="inline-start" /> },
+    { title: { en: "Integrated e-invoice systems" }, icon: <Target data-icon="inline-start" />, wide: true },
   ],
 }: FeatureGridProps) {
   return (

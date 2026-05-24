@@ -16,36 +16,36 @@ export const en = {
     logoHref: "/en",
     languageLabel: "CN/EN",
     cta: "Book a demo",
-    ctaHref: "/en/contact",
+    ctaHref: "https://client.agaventures.ai/enquiry",
     groups: [
       {
-        label: "Products",
+        label: "Services",
         href: "/en/services",
         children: [
           {
-            label: "AGA Flow",
-            description: "Systemize dept workflows, approvals & task standards.",
-            href: "/en/services/business-systemization",
+            label: "OneSystem™",
+            description: "The operating system for your SME.",
+            href: "/en/services/one-system",
           },
           {
-            label: "AGA Workflow",
-            description: "Lark / ERP workflow setup, lightweight & scalable.",
-            href: "/en/services/lark-erp-workflow",
+            label: "OneIntelligence™",
+            description: "AI that learns from your business system.",
+            href: "/en/services/one-intelligence",
           },
           {
-            label: "AGA Sales",
-            description: "Leads, follow-ups, quotes & deals in one place.",
-            href: "/en/services/sales-crm",
+            label: "Workflow Registry",
+            description: "Every workflow organized in one place.",
+            href: "/en/services/workflow-registry",
           },
           {
-            label: "AGA Finance",
-            description: "Revenue, cost, and cash flow at a glance.",
-            href: "/en/services/finance-reporting",
+            label: "Business DNA™",
+            description: "Your company’s way of working, encoded.",
+            href: "/en/services/business-dna",
           },
           {
-            label: "AGA AI",
-            description: "Automate repetitive tasks. Deploy AI agents.",
-            href: "/en/services/ai-automation-agent",
+            label: "Cortex",
+            description: "The backend engine behind the system.",
+            href: "/en/services/cortex",
           },
         ],
       },
@@ -80,6 +80,7 @@ export const en = {
           },
         ],
       },
+      { label: "Insights", href: "/en/insights" },
       { label: "Case Studies", href: "/en/case-studies" },
       { label: "About", href: "/en/about" },
     ],
@@ -88,23 +89,23 @@ export const en = {
     title: "Still running your business on",
     accent: "Excel, WhatsApp & verbal approvals?",
     description:
-      "AGA turns scattered workflows into one connected system your team actually uses — sales, operations, finance, and AI automation, all managed from one phone.",
-    primaryAction: "Book a free 30-min diagnosis",
-    secondaryAction: "WhatsApp us now",
+      "Stop being the person your team can't operate without. AGA builds the system that runs your business — so you finally can.",
+    primaryAction: "Book a Free 30-Min Diagnosis",
+    secondaryAction: "or WhatsApp us now →",
     whatsappHref: "https://wa.me/60183576003",
     visualNote:
       "Connect workflows, sales, operations, finance visibility, automation, and AI agents.",
   },
   socialProof: {
-    label: "Trusted by ASEAN companies from startups to enterprise",
-    logos: ["Lark", "SME Corp", "MyIPO", "MDEC", "F&B Group", "Education Hub", "Retail Ops"],
+    label: "Trusted by growth-stage businesses across Malaysia",
+    logos: [],
   },
   eventSpotlight: {
     eyebrow: "Spotlight event",
     title: "SME AI Systemization Workshop",
     description: "Discover how AI agents, workflow automation, and mobile dashboards enter the enterprise world.",
     href: "/en/events/sme-ai-systemization-workshop",
-    action: "View event",
+    action: "Book a demo",
   },
   statsSection: {
     eyebrow: "Systemization starting point",
@@ -112,9 +113,9 @@ export const en = {
     description:
       "AGA starts with process diagnosis to help owners identify what should be systemized, automated, and turned into a scalable business foundation.",
     stats: [
-      { value: "50+", label: "Business process analyses completed" },
+      { value: "20+", label: "Business process analyses completed" },
       { value: "70%", label: "Common repetitive work can be automated" },
-      { value: "200+", label: "SME system module planning directions" },
+      { value: "53+", label: "SME system module planning directions" },
     ],
   },
   trustSection: {
@@ -149,50 +150,135 @@ export const en = {
     title: "One platform.",
     accent: "Every system your business needs.",
     description:
-      "Start with what you need today. Add more as your business grows. Every AGA product is designed to work together.",
+      "Start with what you need today. Add more as your business grows. Every AGA service module is designed to work together.",
     products: [
       {
-        name: "AGA Flow",
-        tagline: "Business process systemization",
+        name: "OneSystem™",
+        tagline: "The operating system for your SME",
         description:
-          "Clarify department workflows, approvals, tasks, and document management so daily work has clear standards.",
-        href: "/en/services/business-systemization",
-        visualKind: "workflow",
-      },
-      {
-        name: "AGA Workflow",
-        tagline: "Lark / ERP workflow setup",
-        description:
-          "Build lightweight, scalable workflows based on how the business actually operates.",
-        href: "/en/services/lark-erp-workflow",
+          "OneSystem brings workflows, approvals, dashboards, customers, tasks, and team execution into one connected business system.",
+        href: "/en/services/one-system",
         visualKind: "operations",
+        details: [
+          {
+            title: "Connect the departments",
+            description:
+              "Sales, operations, finance, service, and management workflows are organized into one shared operating structure.",
+          },
+          {
+            title: "Run daily work",
+            description:
+              "Teams follow tasks, approvals, reminders, and dashboards inside the same system.",
+          },
+          {
+            title: "Give owners visibility",
+            description:
+              "Owners see bottlenecks, responsibilities, follow-up status, and business health without chasing every person.",
+          },
+        ],
       },
       {
-        name: "AGA Sales",
-        tagline: "Sales & customer management",
+        name: "OneIntelligence™",
+        tagline: "AI that learns from your business system",
         description:
-          "Centralize leads, customers, follow-ups, quotations, and deal progress.",
-        href: "/en/services/sales-crm",
-        visualKind: "sales",
-      },
-      {
-        name: "AGA Finance",
-        tagline: "Finance & management reporting",
-        description:
-          "Help owners understand revenue, cost, cash flow, and team execution data more clearly.",
-        href: "/en/services/finance-reporting",
-        visualKind: "finance",
-      },
-      {
-        name: "AGA AI",
-        tagline: "AI automation & AI agents",
-        description:
-          "Automate repetitive work and design AI workflows that support team execution.",
-        href: "/en/services/ai-automation-agent",
+          "OneIntelligence turns operational data into summaries, suggestions, alerts, and AI-assisted execution that improves month by month.",
+        href: "/en/services/one-intelligence",
         visualKind: "ai",
+        details: [
+          {
+            title: "Read business signals",
+            description:
+              "It learns from tasks, workflow history, sales activity, approvals, and operational patterns.",
+          },
+          {
+            title: "Support decisions",
+            description:
+              "It produces summaries, reminders, next-step suggestions, and management alerts.",
+          },
+          {
+            title: "Improve every month",
+            description:
+              "As more workflows run through OneSystem, OneIntelligence gets better context and sharper recommendations.",
+          },
+        ],
+      },
+      {
+        name: "Workflow Registry",
+        tagline: "Every workflow organized in one place",
+        description:
+          "Workflow Registry is the organized list of how work happens, who owns it, what triggers it, and where it gets stuck.",
+        href: "/en/services/workflow-registry",
+        visualKind: "workflow",
+        details: [
+          {
+            title: "List the workflows",
+            description:
+              "Document each workflow, owner, trigger, handover, approval, and output.",
+          },
+          {
+            title: "Expose the gaps",
+            description:
+              "Find duplicated work, missing owners, slow approvals, and unclear follow-up points.",
+          },
+          {
+            title: "Prepare automation",
+            description:
+              "Once workflows are registered, they can be turned into systems, dashboards, and automation rules.",
+          },
+        ],
+      },
+      {
+        name: "Business DNA™",
+        tagline: "Your company’s way of working, encoded",
+        description:
+          "Business DNA captures the unique way your business sells, serves, approves, reports, and makes decisions.",
+        href: "/en/services/business-dna",
+        visualKind: "workflow",
+        details: [
+          {
+            title: "Understand the business logic",
+            description:
+              "Capture the decisions, exceptions, priorities, roles, and habits that make the company work.",
+          },
+          {
+            title: "Turn it into structure",
+            description:
+              "Convert that logic into fields, statuses, workflows, dashboards, and permission rules.",
+          },
+          {
+            title: "Protect how the business scales",
+            description:
+              "As the team grows, the company keeps its operating DNA instead of depending only on memory and key people.",
+          },
+        ],
+      },
+      {
+        name: "Cortex",
+        tagline: "The backend engine behind the system",
+        description:
+          "Cortex connects data, permissions, automation, integrations, and AI actions behind the scenes.",
+        href: "/en/services/cortex",
+        visualKind: "finance",
+        details: [
+          {
+            title: "Connect the infrastructure",
+            description:
+              "Integrate databases, APIs, permissions, queues, automations, and third-party tools.",
+          },
+          {
+            title: "Power the workflows",
+            description:
+              "Run the logic behind approvals, notifications, reports, automations, and AI actions.",
+          },
+          {
+            title: "Keep the system scalable",
+            description:
+              "Give the business a backend foundation that can grow as departments, modules, and data increase.",
+          },
+        ],
       },
     ],
-    cta: "Explore all products",
+    cta: "Explore all services",
   },
   industriesSection: {
     eyebrow: "Industry solutions",
@@ -236,32 +322,33 @@ export const en = {
     ],
   },
   processSection: {
-    eyebrow: "AGA Speed",
-    title: "Digitize more",
-    accent: "in less time.",
+    eyebrow: "Product",
+    title: "Each product has",
+    accent: "a clear operating flow.",
+    productLabel: "Product",
     visualLabel:
-      "Digitalize more in less time with AGA systems, automation, and AI agents.",
+      "Choose a product to see how it moves from business input to daily execution.",
     tabs: [
       {
         label: "AGA Flow",
         steps: [
           {
             step: "01",
-            title: "Today",
+            title: "Map",
             description:
-              "Map your current workflows, owners, tools, and approval bottlenecks.",
+              "Capture workflows, owners, approvals, SOPs, and bottlenecks in one operating map.",
           },
           {
             step: "02",
-            title: "Hours later",
+            title: "Systemize",
             description:
-              "Configure system modules, automation rules, dashboards, and AI task flow.",
+              "Turn the map into task boards, approval rules, handover steps, and team dashboards.",
           },
           {
             step: "03",
-            title: "Tomorrow",
+            title: "Run",
             description:
-              "Your team gets clearer workflows, faster follow-up, and better visibility.",
+              "Teams execute daily work with clearer ownership, fewer follow-up gaps, and live visibility.",
           },
         ],
       },
@@ -270,21 +357,21 @@ export const en = {
         steps: [
           {
             step: "01",
-            title: "Today",
+            title: "Capture",
             description:
-              "Map lead sources, sales owners, quote status, and follow-up gaps.",
+              "Collect leads, customer details, deal source, quote status, and next actions.",
           },
           {
             step: "02",
-            title: "Hours later",
+            title: "Manage",
             description:
-              "Set pipeline stages, reminders, customer records, and owner dashboards.",
+              "Move opportunities through pipeline stages with reminders, owners, and customer records.",
           },
           {
             step: "03",
-            title: "Tomorrow",
+            title: "Close",
             description:
-              "Sales teams follow up faster with clearer opportunities and deal visibility.",
+              "Owners see follow-up health, deal value, quote progress, and conversion activity.",
           },
         ],
       },
@@ -293,21 +380,21 @@ export const en = {
         steps: [
           {
             step: "01",
-            title: "Today",
+            title: "Detect",
             description:
-              "Identify repetitive tasks, decision points, and manual reporting work.",
+              "Identify repetitive work, report requests, message patterns, and approval triggers.",
           },
           {
             step: "02",
-            title: "Hours later",
+            title: "Automate",
             description:
-              "Connect triggers, prompts, approvals, and AI agent task actions.",
+              "Connect prompts, tools, rules, and AI agent actions to the right workflow steps.",
           },
           {
             step: "03",
-            title: "Tomorrow",
+            title: "Assist",
             description:
-              "AI agents support daily execution, reminders, reporting, and team follow-up.",
+              "AI supports reminders, summaries, first drafts, reports, and routine team follow-up.",
           },
         ],
       },
@@ -361,8 +448,9 @@ export const en = {
     address: "Damansara Utama, Petaling Jaya, Selangor",
     navItems: [
       { label: "Home", href: "/en" },
-      { label: "Products", href: "/en/services" },
+      { label: "Services", href: "/en/services" },
       { label: "Industries", href: "/en/solutions" },
+      { label: "Insights", href: "/en/insights" },
       { label: "Case Studies", href: "/en/case-studies" },
       { label: "About", href: "/en/about" },
       { label: "Contact", href: "/en/contact" },

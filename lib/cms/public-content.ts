@@ -15,10 +15,14 @@ function localeContent(entry: CmsEntry, locale: CmsLocale) {
   return entry.locales.find((item) => item.locale === locale)
 }
 
-export async function getCmsProducts(locale: CmsLocale, fallback: Dictionary["productsSection"]["products"]) {
+export async function getCmsProducts(
+  locale: CmsLocale,
+  fallback: Dictionary["productsSection"]["products"],
+  options: { includeFallback?: boolean } = {}
+) {
   const entries = await getPublishedEntries("products")
 
-  if (!entries.length) return fallback
+  if (!entries.length) return options.includeFallback === false ? [] : fallback
 
   return entries
     .map((entry) => {
@@ -53,10 +57,14 @@ export async function getCmsProduct(locale: CmsLocale, slug: string) {
   }
 }
 
-export async function getCmsIndustries(locale: CmsLocale, fallback: Dictionary["industriesSection"]["industries"]) {
+export async function getCmsIndustries(
+  locale: CmsLocale,
+  fallback: Dictionary["industriesSection"]["industries"],
+  options: { includeFallback?: boolean } = {}
+) {
   const entries = await getPublishedEntries("industries")
 
-  if (!entries.length) return fallback
+  if (!entries.length) return options.includeFallback === false ? [] : fallback
 
   return entries
     .map((entry) => {
@@ -90,10 +98,14 @@ export async function getCmsIndustry(locale: CmsLocale, slug: string) {
   }
 }
 
-export async function getCmsCaseStudies(locale: CmsLocale, fallback: Dictionary["caseStudyItems"]) {
+export async function getCmsCaseStudies(
+  locale: CmsLocale,
+  fallback: Dictionary["caseStudyItems"],
+  options: { includeFallback?: boolean } = {}
+) {
   const entries = await getPublishedEntries("case_studies")
 
-  if (!entries.length) return fallback
+  if (!entries.length) return options.includeFallback === false ? [] : fallback
 
   return entries
     .map((entry) => {
