@@ -2,6 +2,7 @@ export type AuditLocale = "en" | "zh"
 
 export type AuditProfile = {
   company: string
+  email: string
   industry: string
   headcount: string
   role: string

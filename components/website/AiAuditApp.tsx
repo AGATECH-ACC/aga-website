@@ -10,9 +10,7 @@ import {
   Building2,
   Check,
   ChevronDown,
-  Clock,
   Download,
-  Flame,
   Gauge,
   LineChart,
   Loader2,
@@ -27,7 +25,6 @@ import {
 } from "lucide-react"
 
 import {
-  buildFallbackReport,
   computeAuditScore,
   getAuditSections,
   headcounts,
@@ -48,7 +45,7 @@ import {
 } from "@/lib/aiaudit"
 import { cn } from "@/lib/utils"
 
-type Screen = "gate" | "profile" | "audit" | "workflows" | "analyzing" | "results"
+type Screen = "gate" | "profile" | "verify" | "audit" | "workflows" | "analyzing" | "results"
 
 type AiAuditAppProps = {
   locale: AuditLocale
@@ -107,6 +104,15 @@ const copy = {
     estimated: "8 min assessment",
     secure: "Server-side OpenAI report",
     profileMissing: "Complete every profile field to continue.",
+    email: "Work email",
+    verificationTitle: "Verify your email",
+    verificationDescription: "Enter the 6-digit code we sent before continuing to the audit.",
+    verificationCode: "Verification code",
+    verificationMissing: "Enter the verification code.",
+    verificationSubmit: "Verify email",
+    verificationDevCode: "Development code",
+    requestVerification: "Send verification code",
+    verificationFailed: "Verification failed. Check the code and try again.",
     auditStep: "STEP 2 OF 4 · AI READINESS",
     auditTitle: "Score your business reality",
     auditDescription: "Choose the answer that best reflects today, not the version you wish existed.",
@@ -167,6 +173,15 @@ const copy = {
     estimated: "约 8 分钟",
     secure: "OpenAI 在服务器端生成",
     profileMissing: "请填写所有公司资料后继续。",
+    email: "工作邮箱",
+    verificationTitle: "验证你的邮箱",
+    verificationDescription: "请输入我们发送给你的 6 位数验证码，然后继续评估。",
+    verificationCode: "验证码",
+    verificationMissing: "请输入验证码。",
+    verificationSubmit: "验证邮箱",
+    verificationDevCode: "开发环境验证码",
+    requestVerification: "发送验证码",
+    verificationFailed: "验证失败，请检查验证码后再试。",
     auditStep: "第 2 / 4 步 · AI 准备度",
     auditTitle: "评估真实业务现状",
     auditDescription: "请选择最接近今天情况的答案，而不是理想状态。",
@@ -391,13 +406,18 @@ function GateScreen({ locale, onStart }: { locale: AuditLocale; onStart: () => v
 function ProfileScreen({
   locale,
   onSubmit,
+  pending,
+  error,
 }: {
   locale: AuditLocale
   onSubmit: (profile: AuditProfile) => void
+  pending?: boolean
+  error?: string | null
 }) {
   const text = uiText[locale]
   const [profile, setProfile] = useState<AuditProfile>({
     company: "",
+    email: "",
     industry: "",
     headcount: "",
     role: "",
@@ -433,6 +453,16 @@ function ProfileScreen({
             placeholder="AGA Ventures"
           />
         </label>
+        <label className="mt-5 grid gap-2">
+          <span className="text-sm font-semibold text-white/70">{copy[locale].email}</span>
+          <input
+            type="email"
+            value={profile.email}
+            onChange={(event) => update("email", event.target.value)}
+            className="h-12 rounded-xl border border-white/10 bg-white/10 px-4 text-white outline-none transition placeholder:text-white/35 focus:border-[#E8521A]"
+            placeholder="owner@company.com"
+          />
+        </label>
 
         <div className="mt-5 grid gap-5 md:grid-cols-3">
           <SelectField label={text.industry} value={profile.industry} onChange={(value) => update("industry", value)} options={industries} labels={industryLabels[locale]} placeholder={text.select} />
@@ -441,11 +471,71 @@ function ProfileScreen({
         </div>
 
         {showError ? <p className="mt-4 text-sm font-semibold text-[#ffb08d]">{copy[locale].profileMissing}</p> : null}
+        {error ? <p className="mt-4 text-sm font-semibold text-[#ffb08d]">{error}</p> : null}
 
         <div className="mt-7 flex justify-end">
-          <PrimaryButton onClick={submit}>
-            {text.continue}
-            <ArrowRight className="size-4" />
+          <PrimaryButton onClick={submit} disabled={pending}>
+            {pending ? <Loader2 className="size-4 animate-spin" /> : null}
+            {copy[locale].requestVerification}
+            {!pending ? <ArrowRight className="size-4" /> : null}
+          </PrimaryButton>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function VerifyEmailScreen({
+  locale,
+  email,
+  devCode,
+  pending,
+  error,
+  onSubmit,
+}: {
+  locale: AuditLocale
+  email: string
+  devCode?: string | null
+  pending?: boolean
+  error?: string | null
+  onSubmit: (code: string) => void
+}) {
+  const [code, setCode] = useState("")
+
+  function submit() {
+    if (!code.trim()) return
+    onSubmit(code.trim())
+  }
+
+  return (
+    <div className="mx-auto max-w-xl">
+      <Pill>{copy[locale].email}</Pill>
+      <h1 className="mt-5 text-4xl font-black tracking-normal md:text-6xl">{copy[locale].verificationTitle}</h1>
+      <p className="mt-4 text-lg leading-8 text-white/65">
+        {copy[locale].verificationDescription} <span className="font-semibold text-white">{email}</span>
+      </p>
+      <div className="mt-8 rounded-[1.5rem] border border-white/10 bg-white/[0.06] p-5 md:p-7">
+        <label className="grid gap-2">
+          <span className="text-sm font-semibold text-white/70">{copy[locale].verificationCode}</span>
+          <input
+            inputMode="numeric"
+            value={code}
+            onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
+            className="h-14 rounded-xl border border-white/10 bg-white/10 px-4 text-center text-2xl font-black tracking-[0.3em] text-white outline-none transition placeholder:text-white/35 focus:border-[#E8521A]"
+            placeholder="000000"
+          />
+        </label>
+        {devCode ? (
+          <p className="mt-4 rounded-2xl border border-amber-400/25 bg-amber-400/10 p-3 text-sm font-semibold text-amber-100">
+            {copy[locale].verificationDevCode}: {devCode}
+          </p>
+        ) : null}
+        {error ? <p className="mt-4 text-sm font-semibold text-[#ffb08d]">{error}</p> : null}
+        <div className="mt-7 flex justify-end">
+          <PrimaryButton onClick={submit} disabled={pending || code.length < 6}>
+            {pending ? <Loader2 className="size-4 animate-spin" /> : null}
+            {copy[locale].verificationSubmit}
+            {!pending ? <ArrowRight className="size-4" /> : null}
           </PrimaryButton>
         </div>
       </div>
@@ -631,12 +721,14 @@ function WorkflowScreen({
   locale,
   profile,
   selectedWorkflows,
+  error,
   onChange,
   onGenerate,
 }: {
   locale: AuditLocale
   profile: AuditProfile
   selectedWorkflows: WorkflowSelection[]
+  error?: string | null
   onChange: (workflows: WorkflowSelection[]) => void
   onGenerate: () => void
 }) {
@@ -723,6 +815,7 @@ function WorkflowScreen({
             {text.generate}
             <Sparkles className="size-4" />
           </PrimaryButton>
+          {error ? <p className="mt-4 text-sm font-semibold leading-6 text-[#ffb08d]">{error}</p> : null}
         </div>
       </aside>
     </div>
@@ -857,6 +950,7 @@ function ResultsScreen({
   score,
   profile,
   source,
+  onContact,
   onRestart,
 }: {
   locale: AuditLocale
@@ -864,6 +958,7 @@ function ResultsScreen({
   score: number
   profile: AuditProfile
   source: "openai" | "fallback"
+  onContact: () => void
   onRestart: () => void
 }) {
   const maturity = maturityLabel(score, locale)
@@ -912,6 +1007,7 @@ function ResultsScreen({
               href={whatsappHref}
               target="_blank"
               rel="noreferrer"
+              onClick={onContact}
               className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white/80 transition hover:bg-white/10"
             >
               <MessageCircle className="size-4" />
@@ -1012,87 +1108,23 @@ function ResultsScreen({
         ) : null}
 
         {activeTab === "workflows" ? (
-          <ReportSection icon={<Workflow className="size-5" />} title={uiText[locale].workflows}>
-            <div className="space-y-4">
-              {report.workflow_analysis.map((workflow) => (
-                <article key={workflow.name} className="rounded-[1.25rem] border border-white/10 bg-[#0F1923]/45 p-5">
-                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                    <div>
-                      <h3 className="text-xl font-black tracking-normal">{workflow.name}</h3>
-                      <p className="mt-2 text-sm leading-6 text-white/60">{workflow.gap_summary}</p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Pill className="border-[#E8521A]/25 text-[#ffb08d]">{formatRM(workflow.monthly_waste_rm)}{copy[locale].perMonth}</Pill>
-                      <Pill className="border-blue-400/25 text-blue-200">L{workflow.maturity_level} · {workflow.maturity_label}</Pill>
-                      <Pill className="border-red-400/25 text-red-200">{workflow.priority}</Pill>
-                    </div>
-                  </div>
-                  <div className="mt-4 grid gap-3 md:grid-cols-3">
-                    <MiniList title={copy[locale].currentTools} items={workflow.current_tools.length ? workflow.current_tools : [copy[locale].manual]} />
-                    <MiniList title={copy[locale].addTools} items={workflow.tools_to_add} />
-                    <MiniList title={copy[locale].retireTools} items={workflow.tools_to_retire.length ? workflow.tools_to_retire : ["-"]} />
-                  </div>
-                  <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                    <p className="text-sm font-bold text-white/85">{copy[locale].recommended}: {workflow.recommended_platform}</p>
-                    <div className="mt-3 grid gap-3">
-                      {workflow.upgrade_path.map((stage) => (
-                        <TimelineStep key={`${workflow.name}-${stage.stage}`} stage={stage.stage} title={stage.timeline} body={`${stage.action} (${stage.benefit})`} />
-                      ))}
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </ReportSection>
+          <LockedDetailsPanel
+            locale={locale}
+            title={uiText[locale].workflows}
+            description={report.workflow_analysis.slice(0, 2).map((workflow) => `${workflow.name}: ${formatRM(workflow.monthly_waste_rm)}${copy[locale].perMonth}`).join(" · ")}
+            href={whatsappHref}
+            onContact={onContact}
+          />
         ) : null}
 
         {activeTab === "roadmap" ? (
-          <div className="space-y-5">
-            <ReportSection icon={<Sparkles className="size-5" />} title={uiText[locale].roadmap}>
-              <div className="grid gap-4">
-                {report.priority_roadmap.map((stage) => (
-                  <article key={stage.stage} className="rounded-[1.25rem] border border-white/10 bg-[#0F1923]/45 p-5">
-                    <Pill className="border-[#E8521A]/25 text-[#ffb08d]">{stage.timeline}</Pill>
-                    <h3 className="mt-3 text-2xl font-black tracking-normal">{stage.stage}. {stage.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-white/62">{stage.focus}</p>
-                    <div className="mt-4 grid gap-3 md:grid-cols-2">
-                      <MiniList title={copy[locale].keyActions} items={stage.key_actions} />
-                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                        <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/40">{copy[locale].investment}</p>
-                        <p className="mt-2 font-bold">{stage.investment_range}</p>
-                        <p className="mt-3 text-xs font-bold uppercase tracking-[0.16em] text-white/40">{copy[locale].expectedRoi}</p>
-                        <p className="mt-2 text-sm leading-6 text-white/62">{stage.expected_roi}</p>
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </ReportSection>
-
-            <InsightPanel icon={<Bot className="size-5" />} title={copy[locale].verdict} body={report.one_intelligence_verdict} />
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-[1.75rem] border border-amber-400/25 bg-amber-400/10 p-6">
-                <Clock className="size-6 text-amber-200" />
-                <h3 className="mt-4 text-2xl font-black tracking-normal">{report.urgency_statement}</h3>
-              </div>
-              <div className="rounded-[1.75rem] border border-[#E8521A]/35 bg-[#E8521A]/15 p-6">
-                <Flame className="size-6 text-[#ffb08d]" />
-                <p className="mt-4 text-sm font-bold uppercase tracking-[0.18em] text-[#ffb08d]">{copy[locale].costOfInaction}</p>
-                <h3 className="mt-2 text-4xl font-black tracking-normal">{formatRM(report.revenue_leak.three_month_inaction_cost_rm)}</h3>
-                <p className="mt-2 text-sm leading-6 text-white/62">{copy[locale].threeMonths}</p>
-              </div>
-            </div>
-
-            <div className="rounded-[1.75rem] border border-[#E8521A]/25 bg-[#E8521A] p-6 text-white md:p-8">
-              <Pill className="border-white/25 bg-white/15 text-white">{copy[locale].reportRef}: {report.report_reference_id}</Pill>
-              <h2 className="mt-5 text-3xl font-black tracking-normal">{report.cta_message}</h2>
-              <a href={whatsappHref} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-[#0F1923]">
-                {uiText[locale].talkToAga}
-                <ArrowRight className="size-4" />
-              </a>
-            </div>
-          </div>
+          <LockedDetailsPanel
+            locale={locale}
+            title={uiText[locale].roadmap}
+            description={`${report.urgency_statement} ${copy[locale].costOfInaction}: ${formatRM(report.revenue_leak.three_month_inaction_cost_rm)}.`}
+            href={whatsappHref}
+            onContact={onContact}
+          />
         ) : null}
       </section>
     </div>
@@ -1165,14 +1197,44 @@ function VisionList({ title, items, tone }: { title: string; items: string[]; to
   )
 }
 
-function TimelineStep({ stage, title, body }: { stage: number; title: string; body: string }) {
+function LockedDetailsPanel({
+  locale,
+  title,
+  description,
+  href,
+  onContact,
+}: {
+  locale: AuditLocale
+  title: string
+  description: string
+  href: string
+  onContact: () => void
+}) {
   return (
-    <div className="flex gap-3">
-      <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#E8521A] text-xs font-black">{stage}</span>
-      <p className="text-sm leading-6 text-white/62">
-        <strong className="font-semibold text-white">{title}:</strong> {body}
-      </p>
-    </div>
+    <section className="rounded-[1.75rem] border border-[#E8521A]/25 bg-white/[0.06] p-6 md:p-8">
+      <Pill className="border-[#E8521A]/25 text-[#ffb08d]">{title}</Pill>
+      <h2 className="mt-5 text-3xl font-black tracking-normal">
+        {locale === "zh" ? "完整细节已保存，联系 AGA 查看下一步。" : "Full details are saved. Contact AGA for the next step."}
+      </h2>
+      <p className="mt-4 text-sm leading-7 text-white/65">{description}</p>
+      <div className="mt-6 rounded-2xl border border-white/10 bg-[#0F1923]/45 p-4">
+        <p className="text-sm leading-6 text-white/62">
+          {locale === "zh"
+            ? "我们会根据已保存的报告编号、流程与分数，与你讨论完整 Workflow 诊断和实施路线。"
+            : "We will use the saved report reference, workflows, and score to walk through the full workflow diagnosis and implementation roadmap."}
+        </p>
+      </div>
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        onClick={onContact}
+        className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#E8521A] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#E8521A]/25 transition hover:bg-[#ff6a2f]"
+      >
+        <MessageCircle className="size-4" />
+        {uiText[locale].talkToAga}
+      </a>
+    </section>
   )
 }
 
@@ -1188,62 +1250,119 @@ function ReportSection({ icon, title, children }: { icon: React.ReactNode; title
   )
 }
 
-function MiniList({ title, items }: { title: string; items: string[] }) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-      <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/40">{title}</p>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {items.map((item) => (
-          <span key={item} className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/70">
-            {item}
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 export function AiAuditApp({ locale }: AiAuditAppProps) {
   const [screen, setScreen] = useState<Screen>("gate")
   const [profile, setProfile] = useState<AuditProfile | null>(null)
+  const [leadId, setLeadId] = useState<string | null>(null)
+  const [verificationId, setVerificationId] = useState<string | null>(null)
+  const [verificationDevCode, setVerificationDevCode] = useState<string | null>(null)
+  const [profilePending, setProfilePending] = useState(false)
+  const [profileError, setProfileError] = useState<string | null>(null)
+  const [verificationPending, setVerificationPending] = useState(false)
+  const [verificationError, setVerificationError] = useState<string | null>(null)
+  const [reportError, setReportError] = useState<string | null>(null)
   const [answers, setAnswers] = useState<Record<string, number>>({})
   const [selectedWorkflows, setSelectedWorkflows] = useState<WorkflowSelection[]>([])
   const [report, setReport] = useState<AuditReport | null>(null)
+  const [reportId, setReportId] = useState<string | null>(null)
   const [reportSource, setReportSource] = useState<"openai" | "fallback">("fallback")
 
   const score = useMemo(() => computeAuditScore(answers, locale), [answers, locale])
 
   async function generateReport() {
-    if (!profile) return
+    if (!profile || !leadId) return
+    setReportError(null)
     setScreen("analyzing")
 
     try {
       const response = await fetch("/api/aiaudit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ locale, profile, answers, selectedWorkflows }),
+        body: JSON.stringify({ leadId, locale, profile, answers, selectedWorkflows }),
       })
-      const payload = (await response.json()) as { report?: AuditReport; source?: "openai" | "fallback" }
+      const payload = (await response.json()) as { report?: AuditReport; source?: "openai" | "fallback"; reportId?: string }
 
       if (!response.ok || !payload.report) throw new Error("Audit API failed")
 
       setReport(payload.report)
+      setReportId(payload.reportId ?? null)
       setReportSource(payload.source ?? "fallback")
+      setScreen("results")
     } catch {
-      setReport(buildFallbackReport({ locale, profile, answers, score, selectedWorkflows }))
-      setReportSource("fallback")
+      setReportError(locale === "zh" ? "报告无法保存。请稍后重试。" : "The report could not be saved. Please try again.")
+      setScreen("workflows")
     }
-
-    setScreen("results")
   }
 
   function reset() {
     setScreen("gate")
     setProfile(null)
+    setLeadId(null)
+    setVerificationId(null)
+    setVerificationDevCode(null)
+    setProfilePending(false)
+    setProfileError(null)
+    setVerificationPending(false)
+    setVerificationError(null)
+    setReportError(null)
     setAnswers({})
     setSelectedWorkflows([])
     setReport(null)
+    setReportId(null)
     setReportSource("fallback")
+  }
+
+  async function requestVerification(nextProfile: AuditProfile) {
+    setProfilePending(true)
+    setProfileError(null)
+    try {
+      const response = await fetch("/api/aiaudit/verification/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locale, profile: nextProfile }),
+      })
+      const payload = (await response.json()) as { leadId?: string; verificationId?: string; devCode?: string; error?: string }
+      if (!response.ok || !payload.leadId || !payload.verificationId) throw new Error(payload.error || "Unable to send verification")
+      setProfile(nextProfile)
+      setLeadId(payload.leadId)
+      setVerificationId(payload.verificationId)
+      setVerificationDevCode(payload.devCode ?? null)
+      setScreen("verify")
+    } catch (error) {
+      setProfileError(error instanceof Error ? error.message : "Unable to send verification")
+    } finally {
+      setProfilePending(false)
+    }
+  }
+
+  async function confirmVerification(code: string) {
+    if (!leadId || !verificationId || !profile) return
+    setVerificationPending(true)
+    setVerificationError(null)
+    try {
+      const response = await fetch("/api/aiaudit/verification/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ leadId, verificationId, code }),
+      })
+      const payload = (await response.json()) as { verified?: boolean; error?: string }
+      if (!response.ok || !payload.verified) throw new Error(payload.error || copy[locale].verificationFailed)
+      setSelectedWorkflows((industryWorkflows[profile.industry] ?? industryWorkflows.Other).slice(0, 4).map((name) => ({ name, tools: [] })))
+      setScreen("audit")
+    } catch (error) {
+      setVerificationError(error instanceof Error ? error.message : copy[locale].verificationFailed)
+    } finally {
+      setVerificationPending(false)
+    }
+  }
+
+  function saveContactRequest() {
+    if (!reportId) return
+    void fetch("/api/aiaudit/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reportId }),
+    })
   }
 
   return (
@@ -1252,11 +1371,19 @@ export function AiAuditApp({ locale }: AiAuditAppProps) {
       {screen === "profile" ? (
         <ProfileScreen
           locale={locale}
-          onSubmit={(nextProfile) => {
-            setProfile(nextProfile)
-            setSelectedWorkflows((industryWorkflows[nextProfile.industry] ?? industryWorkflows.Other).slice(0, 4).map((name) => ({ name, tools: [] })))
-            setScreen("audit")
-          }}
+          pending={profilePending}
+          error={profileError}
+          onSubmit={requestVerification}
+        />
+      ) : null}
+      {screen === "verify" && profile ? (
+        <VerifyEmailScreen
+          locale={locale}
+          email={profile.email}
+          devCode={verificationDevCode}
+          pending={verificationPending}
+          error={verificationError}
+          onSubmit={confirmVerification}
         />
       ) : null}
       {screen === "audit" ? <AuditScreen locale={locale} answers={answers} onChange={setAnswers} onComplete={() => setScreen("workflows")} /> : null}
@@ -1265,12 +1392,13 @@ export function AiAuditApp({ locale }: AiAuditAppProps) {
           locale={locale}
           profile={profile}
           selectedWorkflows={selectedWorkflows}
+          error={reportError}
           onChange={setSelectedWorkflows}
           onGenerate={generateReport}
         />
       ) : null}
       {screen === "analyzing" ? <AnalyzingScreen locale={locale} /> : null}
-      {screen === "results" && report && profile ? <ResultsScreen locale={locale} report={report} score={score} profile={profile} source={reportSource} onRestart={reset} /> : null}
+      {screen === "results" && report && profile ? <ResultsScreen locale={locale} report={report} score={score} profile={profile} source={reportSource} onContact={saveContactRequest} onRestart={reset} /> : null}
     </AuditShell>
   )
 }

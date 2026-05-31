@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import OpenAI from "openai"
 
+import { getVerifiedAuditLead, saveAuditReport } from "@/lib/aiaudit-persistence"
 import {
   auditReportJsonSchema,
   buildFinancialImpact,
@@ -18,6 +19,7 @@ import {
 export const runtime = "nodejs"
 
 type AuditRequestBody = {
+  leadId?: string
   locale?: string
   profile?: Partial<AuditProfile>
   answers?: Record<string, unknown>
@@ -31,6 +33,7 @@ function normalizeLocale(locale?: string): AuditLocale {
 function normalizeProfile(profile?: Partial<AuditProfile>): AuditProfile {
   return {
     company: String(profile?.company ?? "").trim(),
+    email: String(profile?.email ?? "").trim().toLowerCase(),
     industry: String(profile?.industry ?? "").trim(),
     headcount: String(profile?.headcount ?? "").trim(),
     role: String(profile?.role ?? "").trim(),
@@ -62,7 +65,8 @@ function normalizeWorkflows(workflows?: Array<Partial<WorkflowSelection>>): Work
     .slice(0, 12)
 }
 
-function fallbackResponse({
+async function fallbackResponse({
+  leadId,
   locale,
   profile,
   answers,
@@ -70,6 +74,7 @@ function fallbackResponse({
   selectedWorkflows,
   reason,
 }: {
+  leadId: string
   locale: AuditLocale
   profile: AuditProfile
   answers: Record<string, number>
@@ -77,10 +82,23 @@ function fallbackResponse({
   selectedWorkflows: WorkflowSelection[]
   reason: "missing_api_key" | "openai_error"
 }) {
+  const report = buildFallbackReport({ locale, profile, answers, score, selectedWorkflows })
+  const reportId = await saveAuditReport({
+    leadId,
+    locale,
+    profile,
+    answers,
+    selectedWorkflows,
+    score,
+    source: "fallback",
+    report,
+  })
+
   return NextResponse.json({
     source: "fallback",
     reason,
-    report: buildFallbackReport({ locale, profile, answers, score, selectedWorkflows }),
+    report,
+    reportId,
   })
 }
 
@@ -183,9 +201,20 @@ export async function POST(request: Request) {
   const answers = normalizeAnswers(body.answers)
   const selectedWorkflows = normalizeWorkflows(body.selectedWorkflows)
   const score = computeAuditScore(answers, locale)
+  const leadId = String(body.leadId ?? "").trim()
+
+  if (!leadId) {
+    return NextResponse.json({ error: "Email verification is required" }, { status: 401 })
+  }
+
+  const verifiedLead = await getVerifiedAuditLead(leadId)
+  if (!verifiedLead) {
+    return NextResponse.json({ error: "Email verification is required" }, { status: 401 })
+  }
+  profile.email = verifiedLead.email
 
   if (!process.env.OPENAI_API_KEY) {
-    return fallbackResponse({ locale, profile, answers, score, selectedWorkflows, reason: "missing_api_key" })
+    return fallbackResponse({ leadId, locale, profile, answers, score, selectedWorkflows, reason: "missing_api_key" })
   }
 
   try {
@@ -219,9 +248,20 @@ export async function POST(request: Request) {
       throw new Error("OpenAI response did not match the audit report shape")
     }
 
-    return NextResponse.json({ source: "openai", report: parsed })
+    const reportId = await saveAuditReport({
+      leadId,
+      locale,
+      profile,
+      answers,
+      selectedWorkflows,
+      score,
+      source: "openai",
+      report: parsed,
+    })
+
+    return NextResponse.json({ source: "openai", report: parsed, reportId })
   } catch (error) {
     console.error("AI audit report generation failed", error)
-    return fallbackResponse({ locale, profile, answers, score, selectedWorkflows, reason: "openai_error" })
+    return fallbackResponse({ leadId, locale, profile, answers, score, selectedWorkflows, reason: "openai_error" })
   }
 }
