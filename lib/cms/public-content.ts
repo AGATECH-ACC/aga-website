@@ -11,6 +11,25 @@ function bool(value: unknown, fallback = false) {
   return typeof value === "boolean" ? value : fallback
 }
 
+function textArray(value: unknown, fallback: string[] = []) {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string" && Boolean(item.trim())) : fallback
+}
+
+function moduleArray(value: unknown) {
+  if (!Array.isArray(value)) return []
+
+  return value
+    .map((item) => {
+      if (!item || typeof item !== "object") return null
+      const moduleField = item as { title?: unknown; description?: unknown }
+      return {
+        title: text(moduleField.title),
+        description: text(moduleField.description),
+      }
+    })
+    .filter((item): item is { title: string; description: string } => Boolean(item?.title || item?.description))
+}
+
 function localeContent(entry: CmsEntry, locale: CmsLocale) {
   return entry.locales.find((item) => item.locale === locale)
 }
@@ -77,6 +96,9 @@ export async function getCmsIndustries(
         href: `/${locale}/solutions/${entry.slug}`,
         visualKind: text(content.fields.visualKind, "services") as "education" | "fnb" | "services" | "wholesale" | "professional",
         active: bool(content.fields.active),
+        image: text(content.fields.imageUrl),
+        inside: textArray(content.fields.inside),
+        result: text(content.fields.result),
       }
     })
     .filter((item): item is NonNullable<typeof item> => Boolean(item))
@@ -92,9 +114,16 @@ export async function getCmsIndustry(locale: CmsLocale, slug: string) {
     slug: entry.slug,
     title: content.title,
     description: content.summary,
-    modules: Array.isArray(content.fields.modules)
-      ? (content.fields.modules as Array<{ title: string; description: string }>)
-      : [],
+    image: text(content.fields.imageUrl),
+    vertical: text(content.fields.vertical),
+    audience: text(content.fields.audience),
+    inside: textArray(content.fields.inside),
+    result: text(content.fields.result),
+    painPoints: textArray(content.fields.painPoints),
+    trustAnchors: textArray(content.fields.trustAnchors),
+    legacyToolsReplaced: textArray(content.fields.legacyToolsReplaced),
+    questionHeadings: textArray(content.fields.questionHeadings),
+    modules: moduleArray(content.fields.modules),
   }
 }
 
@@ -117,6 +146,10 @@ export async function getCmsCaseStudies(
         title: content.title,
         industry: content.accent || text(content.fields.industry),
         metric: text(content.fields.metric),
+        locationSignal: text(content.fields.locationSignal),
+        workflowFocus: text(content.fields.workflowFocus),
+        agaSystem: text(content.fields.agaSystem),
+        legacyToolsReplaced: textArray(content.fields.legacyToolsReplaced),
         summary: content.summary,
         challenge: text(content.fields.challenge),
         solution: text(content.fields.solution),

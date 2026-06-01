@@ -1,12 +1,13 @@
 import { LogoAssetsManager } from "@/components/admin/LogoAssetsManager"
+import { LlmsTextForm } from "@/components/admin/LlmsTextForm"
 import { SiteStatsForm } from "@/components/admin/SiteStatsForm"
 import { TestimonialsManager } from "@/components/admin/TestimonialsManager"
 import { Badge } from "@/components/ui/badge"
-import { getSiteStats, listLogoAssets, listTestimonials } from "@/lib/cms/db"
+import { getSiteSettings, listLogoAssets, listTestimonials } from "@/lib/cms/db"
 
 export default async function AdminSiteSettingsPage() {
-  const [stats, logos, testimonials] = await Promise.all([
-    getSiteStats(),
+  const [settings, logos, testimonials] = await Promise.all([
+    getSiteSettings(),
     listLogoAssets(),
     listTestimonials(),
   ])
@@ -23,7 +24,8 @@ export default async function AdminSiteSettingsPage() {
         </p>
       </div>
 
-      <SiteStatsForm stats={stats} />
+      <SiteStatsForm stats={settings.stats} />
+      <LlmsTextForm value={settings.llmsMarkdown} />
       <LogoAssetsManager logos={logos} />
       <TestimonialsManager testimonials={testimonials} />
     </div>

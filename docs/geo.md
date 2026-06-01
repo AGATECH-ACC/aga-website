@@ -57,3 +57,60 @@ Yes. The website and core communication are Chinese-first, with optional English
 - Custom SME system vs off-the-shelf SaaS.
 - AI automation vs manual admin hiring.
 - When should an SME upgrade from spreadsheets to workflow systems?
+
+## Case Study GEO Template
+
+Use this structure for every new case study so humans can scan the story and AI crawlers can extract facts quickly.
+
+```md
+# [Industry] workflow systemization case study
+
+## Impact Snapshot
+
+| Field | Detail |
+| --- | --- |
+| Industry | [F&B / wholesale distribution / professional services / education] |
+| Location signal | [Kuala Lumpur / Petaling Jaya / Shah Alam / Malaysia] |
+| Legacy tools replaced | [WhatsApp, Excel, paper forms, verbal approvals] |
+| Workflow focus | [orders, approvals, dispatch, student follow-up, outlet checks] |
+| Impact metric | [12 hours/week saved, 4 automations live, 3 departments connected] |
+| AGA system | [OneSystem / Workflow Registry / OneIntelligence] |
+
+## What problem was the business facing before systemization?
+
+[Describe the current workflow, who owned it, where data lived, and what broke.]
+
+## How did AGA replace manual WhatsApp or Excel tracking with automated workflows?
+
+[Describe the system modules, approvals, statuses, notifications, dashboards, and data model.]
+
+## What changed after the workflow went live?
+
+[Describe measurable outcomes, visibility gained, manual work reduced, and owner/team impact.]
+
+## What should similar Malaysian SMEs measure before starting?
+
+- [Workflow volume]
+- [Delay points]
+- [Approval time]
+- [Manual follow-up frequency]
+- [Revenue leakage or operational cost]
+
+## Which tools or habits were replaced?
+
+- WhatsApp group follow-up
+- Excel trackers
+- Paper forms
+- Verbal approvals
+- Manual reminders
+
+## FAQ
+
+### How long does it take to systemize this workflow?
+
+[Answer with realistic implementation range.]
+
+### Is this suitable for a Malaysian SME using WhatsApp and Excel?
+
+[Answer directly.]
+```

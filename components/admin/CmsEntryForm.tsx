@@ -36,6 +36,180 @@ function Textarea(props: React.ComponentProps<"textarea">) {
   )
 }
 
+function parseFieldsJson(value: string) {
+  try {
+    const parsed = JSON.parse(value) as Record<string, unknown>
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
+function stringValue(fields: Record<string, unknown>, key: string) {
+  const value = fields[key]
+  return typeof value === "string" ? value : ""
+}
+
+function booleanValue(fields: Record<string, unknown>, key: string) {
+  return fields[key] === true
+}
+
+function arrayValue(fields: Record<string, unknown>, key: string) {
+  const value = fields[key]
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : []
+}
+
+function modulesText(fields: Record<string, unknown>) {
+  const modules = fields.modules
+  if (!Array.isArray(modules)) return ""
+
+  return modules
+    .map((module) => {
+      if (!module || typeof module !== "object") return ""
+      const item = module as { title?: unknown; description?: unknown }
+      return `${typeof item.title === "string" ? item.title : ""} | ${typeof item.description === "string" ? item.description : ""}`.trim()
+    })
+    .filter(Boolean)
+    .join("\n")
+}
+
+function parseLines(value: string) {
+  return value
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+function parseModules(value: string) {
+  return parseLines(value).map((line) => {
+    const [title = "", ...descriptionParts] = line.split("|")
+    return {
+      title: title.trim(),
+      description: descriptionParts.join("|").trim(),
+    }
+  }).filter((item) => item.title || item.description)
+}
+
+function StructuredFieldsEditor({
+  collection,
+  name,
+  initialJson,
+}: {
+  collection: CmsCollection
+  name: string
+  initialJson: string
+}) {
+  const [fields, setFields] = useState<Record<string, unknown>>(() => parseFieldsJson(initialJson))
+
+  function update(key: string, value: unknown) {
+    setFields((current) => ({ ...current, [key]: value }))
+  }
+
+  function textField(label: string, key: string, placeholder?: string) {
+    return (
+      <Field label={label}>
+        <Input value={stringValue(fields, key)} onChange={(event) => update(key, event.target.value)} placeholder={placeholder} />
+      </Field>
+    )
+  }
+
+  function textAreaField(label: string, key: string, placeholder?: string) {
+    return (
+      <Field label={label}>
+        <Textarea value={stringValue(fields, key)} onChange={(event) => update(key, event.target.value)} placeholder={placeholder} />
+      </Field>
+    )
+  }
+
+  function listField(label: string, key: string, placeholder?: string) {
+    return (
+      <Field label={label}>
+        <Textarea
+          value={arrayValue(fields, key).join("\n")}
+          onChange={(event) => update(key, parseLines(event.target.value))}
+          placeholder={placeholder}
+        />
+      </Field>
+    )
+  }
+
+  function moduleRows() {
+    return (
+      <Field label="System modules (one per line: Title | Description)">
+        <Textarea
+          value={modulesText(fields)}
+          onChange={(event) => update("modules", parseModules(event.target.value))}
+          placeholder={"Quote-to-order flow | Track quotation requests, approvals, customer confirmation, and handover.\nInventory workflow | Connect stock requests, transfers, wastage, and low-stock alerts."}
+        />
+      </Field>
+    )
+  }
+
+  let editor: React.ReactNode = (
+    <Field label="Collection fields JSON">
+      <Textarea value={JSON.stringify(fields, null, 2)} onChange={(event) => setFields(parseFieldsJson(event.target.value))} />
+    </Field>
+  )
+
+  if (collection === "industries") {
+    editor = (
+      <div className="grid gap-4 rounded-xl border bg-background p-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Visual kind">
+            <select
+              value={stringValue(fields, "visualKind") || "services"}
+              onChange={(event) => update("visualKind", event.target.value)}
+              className="h-8 rounded-lg border border-input bg-background px-2.5 text-sm"
+            >
+              <option value="education">education</option>
+              <option value="fnb">fnb</option>
+              <option value="services">services</option>
+              <option value="wholesale">wholesale</option>
+              <option value="professional">professional</option>
+            </select>
+          </Field>
+          <label className="mt-6 flex items-center gap-2 text-sm font-semibold">
+            <input type="checkbox" checked={booleanValue(fields, "active")} onChange={(event) => update("active", event.target.checked)} />
+            Featured industry card
+          </label>
+        </div>
+        {textField("Vertical", "vertical", "Wholesale trade and distribution")}
+        {textField("Audience", "audience", "Malaysia wholesale distributors, warehouse teams, and SME owners")}
+        {textAreaField("Expected result", "result", "What the owner can see or control after systemization.")}
+        {listField("Inside the system (one per line)", "inside", "Quotation flow\nOrder tracking\nInventory checks\nCollection status")}
+        {listField("Pain points (one per line)", "painPoints", "Quotation requests and approvals are scattered.\nCollection follow-up depends on memory.")}
+        {listField("Localized trust anchors (one per line)", "trustAnchors", "Kuala Lumpur\nPetaling Jaya\nShah Alam\nSelangor\nMalaysia")}
+        {listField("Legacy tools replaced (one per line)", "legacyToolsReplaced", "WhatsApp order taking\nExcel quotation trackers\npaper delivery notes")}
+        {listField("Question headings (one per line)", "questionHeadings", "How can wholesale distributors replace manual WhatsApp order tracking?")}
+        {moduleRows()}
+      </div>
+    )
+  }
+
+  if (collection === "case_studies") {
+    editor = (
+      <div className="grid gap-4 rounded-xl border bg-background p-4">
+        {textField("Industry / client type", "industry", "F&B Group, Klang Valley")}
+        {textField("Impact metric", "metric", "12 hours saved weekly")}
+        {textField("Location signal", "locationSignal", "Petaling Jaya, Selangor")}
+        {textField("Workflow focus", "workflowFocus", "Outlet operations and stock requests")}
+        {textField("AGA system", "agaSystem", "OneSystem + Workflow Registry")}
+        {textAreaField("Challenge", "challenge", "What was broken before AGA stepped in.")}
+        {textAreaField("Solution", "solution", "How AGA mapped, built, connected, and trained the workflow.")}
+        {textAreaField("Result", "result", "The measurable operational improvement after launch.")}
+        {listField("Legacy tools replaced (one per line)", "legacyToolsReplaced", "WhatsApp approvals\nExcel trackers\nmanual reminders")}
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {editor}
+      <input type="hidden" name={name} value={JSON.stringify(fields)} />
+    </>
+  )
+}
+
 function Field({
   label,
   children,
@@ -66,6 +240,10 @@ function defaultFieldsJson(collection: CmsCollection) {
       {
         industry: "F&B Group, Klang Valley",
         metric: "12 hours saved weekly",
+        locationSignal: "Petaling Jaya, Selangor",
+        workflowFocus: "Outlet operations and stock requests",
+        agaSystem: "OneSystem + Workflow Registry",
+        legacyToolsReplaced: ["WhatsApp approvals", "Excel trackers", "manual reminders"],
         challenge: "What was broken before AGA stepped in.",
         solution: "How AGA mapped, built, connected, and trained the workflow.",
         result: "The measurable operational improvement after launch.",
@@ -80,6 +258,14 @@ function defaultFieldsJson(collection: CmsCollection) {
       {
         visualKind: "services",
         active: false,
+        vertical: "Service businesses",
+        audience: "Malaysia SME owners and operations managers",
+        result: "Owners see workflow status, blocked tasks, and team execution from one shared system.",
+        inside: ["Workflow registry", "Task ownership", "Approval flow", "Owner dashboard"],
+        painPoints: ["Work is scattered across WhatsApp and spreadsheets."],
+        trustAnchors: ["Kuala Lumpur", "Petaling Jaya", "Shah Alam", "Selangor", "Malaysia"],
+        legacyToolsReplaced: ["WhatsApp follow-up", "Excel trackers", "verbal approvals"],
+        questionHeadings: ["How can this business replace manual WhatsApp tracking with automated workflows?"],
         modules: [
           { title: "Workflow", description: "What this industry workflow needs." },
         ],
@@ -276,16 +462,15 @@ export function CmsEntryForm({
                       onChange={isEnglish ? (event) => setEnglishBody(event.target.value) : undefined}
                     />
                   </Field>
-                  <Field label="Collection fields JSON">
-                    <Textarea
-                      name={`${locale}.fields`}
-                      defaultValue={
-                        content
-                          ? JSON.stringify(content.draftFields ?? content.fields ?? {}, null, 2)
-                          : defaultFieldsJson(collection)
-                      }
-                    />
-                  </Field>
+                  <StructuredFieldsEditor
+                    collection={collection}
+                    name={`${locale}.fields`}
+                    initialJson={
+                      content
+                        ? JSON.stringify(content.draftFields ?? content.fields ?? {}, null, 2)
+                        : defaultFieldsJson(collection)
+                    }
+                  />
                   <Field label="SEO JSON">
                     <Textarea
                       name={`${locale}.seo`}

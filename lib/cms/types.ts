@@ -61,6 +61,11 @@ export type CmsSiteStats = {
   statCounterModules: CmsStatCounter
 }
 
+export type CmsSiteSettings = {
+  stats: CmsSiteStats
+  llmsMarkdown: string
+}
+
 export type CmsLogoAsset = {
   id: string
   name: string

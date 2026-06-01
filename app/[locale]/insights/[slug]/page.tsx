@@ -13,6 +13,7 @@ import {
   faqSchema,
   relatedInsights,
 } from "@/lib/insights/article"
+import { JsonLd } from "@/lib/seo/json-ld"
 
 import { LocalizedShell } from "../../_components/LocalizedShell"
 
@@ -87,16 +88,7 @@ export default async function InsightDetailPage(props: PageProps) {
 
   return (
     <LocalizedShell locale={locale} path={`/${locale}/insights/${slug}`}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
-      />
-      {faqJsonLd ? (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-        />
-      ) : null}
+      <JsonLd data={faqJsonLd ? [articleJsonLd, faqJsonLd] : articleJsonLd} />
       <InsightArticle insight={insight} related={relatedInsights(insight, insights)} locale={locale} />
     </LocalizedShell>
   )

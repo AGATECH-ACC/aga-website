@@ -1,4 +1,5 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
+import { defaultLlmsMarkdown } from "@/lib/seo/llms"
 
 import { getAdminSessionEmail, hasAdminPasscodeConfig } from "./admin-session"
 import type {
@@ -8,6 +9,7 @@ import type {
   CmsLocalizedContent,
   CmsLogoAsset,
   CmsMediaAsset,
+  CmsSiteSettings,
   CmsSiteStats,
   CmsInsight,
   CmsStatus,
@@ -66,6 +68,7 @@ type DbSiteSettings = {
   stat_counter_automation_pct_suffix: string | null
   stat_counter_modules_number: number | null
   stat_counter_modules_suffix: string | null
+  llms_markdown?: string | null
 }
 
 type DbTestimonial = {
@@ -417,15 +420,23 @@ export async function getInsightById(id: string) {
 }
 
 export async function getSiteStats(): Promise<CmsSiteStats> {
+  return (await getSiteSettings()).stats
+}
+
+export async function getLlmsMarkdown(): Promise<string> {
+  return (await getSiteSettings()).llmsMarkdown
+}
+
+export async function getSiteSettings(): Promise<CmsSiteSettings> {
   const supabase = createSupabaseAdminClient()
 
-  if (!supabase) return defaultSiteStats
+  if (!supabase) return { stats: defaultSiteStats, llmsMarkdown: defaultLlmsMarkdown }
 
   const { data, error } = await supabase
     .schema("cms")
     .from("site_settings")
     .select(
-      "stat_counter_analyses_number, stat_counter_analyses_suffix, stat_counter_automation_pct_number, stat_counter_automation_pct_suffix, stat_counter_modules_number, stat_counter_modules_suffix"
+      "stat_counter_analyses_number, stat_counter_analyses_suffix, stat_counter_automation_pct_number, stat_counter_automation_pct_suffix, stat_counter_modules_number, stat_counter_modules_suffix, llms_markdown"
     )
     .eq("id", "site")
     .maybeSingle()
@@ -443,17 +454,22 @@ export async function getSiteStats(): Promise<CmsSiteStats> {
 
     if (fallbackError || !fallbackData?.notes) {
       if (fallbackError) console.error(fallbackError)
-      return defaultSiteStats
+      return { stats: defaultSiteStats, llmsMarkdown: defaultLlmsMarkdown }
     }
 
     try {
-      return mapSiteStats(JSON.parse(fallbackData.notes) as DbSiteSettings)
+      const parsed = JSON.parse(fallbackData.notes) as DbSiteSettings
+      return { stats: mapSiteStats(parsed), llmsMarkdown: parsed.llms_markdown || defaultLlmsMarkdown }
     } catch {
-      return defaultSiteStats
+      return { stats: defaultSiteStats, llmsMarkdown: defaultLlmsMarkdown }
     }
   }
 
-  return mapSiteStats(data as DbSiteSettings)
+  const settings = data as DbSiteSettings
+  return {
+    stats: mapSiteStats(settings),
+    llmsMarkdown: settings.llms_markdown || defaultLlmsMarkdown,
+  }
 }
 
 function mapSiteStats(settings: DbSiteSettings): CmsSiteStats {

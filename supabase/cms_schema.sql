@@ -67,6 +67,7 @@ create table if not exists cms.site_settings (
   stat_counter_automation_pct_suffix text not null default '%',
   stat_counter_modules_number integer not null default 53,
   stat_counter_modules_suffix text not null default '+',
+  llms_markdown text not null default '',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

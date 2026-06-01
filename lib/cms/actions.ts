@@ -641,6 +641,21 @@ export async function saveInsight(formData: FormData) {
   revalidatePath("/zh")
 }
 
+export async function saveLlmsMarkdown(formData: FormData) {
+  const supabase = await requireAdminClient()
+  const llmsMarkdown = String(formData.get("llms_markdown") ?? "").trim()
+
+  const { error } = await supabase
+    .schema("cms")
+    .from("site_settings")
+    .upsert({ id: "site", llms_markdown: llmsMarkdown }, { onConflict: "id" })
+
+  if (error) throw error
+
+  revalidatePath("/llms.txt")
+  revalidatePath("/admin/site-settings")
+}
+
 function faqPairs(formData: FormData, locale: "en" | "zh") {
   const questions = formData.getAll(`faq_${locale}_question`).map((value) => String(value).trim())
   const answers = formData.getAll(`faq_${locale}_answer`).map((value) => String(value).trim())

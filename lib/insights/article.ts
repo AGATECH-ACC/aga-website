@@ -1,26 +1,21 @@
 import type { CmsInsight } from "@/lib/cms/types"
+import { techArticleSchema } from "@/lib/seo/json-ld"
 
 const fallbackImage = "/assets/aga-hero-1.png"
 
 export function articleSchema(insight: CmsInsight, locale: "en" | "zh") {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Article",
+  return techArticleSchema({
     headline: insight.title,
+    description: articleMetaDescription(insight, locale),
+    url: `/${locale}/insights/${insight.slug}`,
     image: insight.coverImage || fallbackImage,
-    datePublished: insight.publishedAt ?? insight.createdAt,
-    dateModified: insight.updatedAt,
-    inLanguage: locale === "zh" ? "zh-CN" : "en",
-    author: {
-      "@type": "Person",
-      name: insight.authorName || "Tan Chi Shiong",
-      jobTitle: insight.authorTitle || "Founder, AGA Ventures",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "AGA Ventures",
-    },
-  }
+    locale,
+    publishedAt: insight.publishedAt ?? insight.createdAt,
+    modifiedAt: insight.updatedAt,
+    authorName: insight.authorName,
+    authorTitle: insight.authorTitle,
+    keywords: insight.tags,
+  })
 }
 
 export function faqSchema(insight: CmsInsight, locale: "en" | "zh") {

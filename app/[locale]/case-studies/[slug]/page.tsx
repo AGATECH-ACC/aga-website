@@ -12,6 +12,7 @@ import {
 } from "@/components/website"
 import { getDictionary, isLocale, locales, type Locale } from "@/lib/i18n/dictionary"
 import { getCmsCaseStudies } from "@/lib/cms/public-content"
+import { absoluteUrl, breadcrumbSchema, caseStudyReportSchema, JsonLd } from "@/lib/seo/json-ld"
 
 import { LocalizedShell } from "../../_components/LocalizedShell"
 
@@ -32,6 +33,21 @@ export function generateStaticParams() {
   })
 }
 
+type CaseStudy = Awaited<ReturnType<typeof getCmsCaseStudies>>[number]
+type GeoCaseStudy = CaseStudy & {
+  locationSignal?: string
+  workflowFocus?: string
+  agaSystem?: string
+  legacyToolsReplaced?: string[]
+}
+
+async function getCaseStudy(locale: Locale, slug: string) {
+  const dictionary = getDictionary(locale)
+  const caseStudies = await getCmsCaseStudies(locale, dictionary.caseStudyItems)
+
+  return caseStudies.find((caseStudy) => caseStudy.slug === slug)
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale: localeParam, slug } = await params
 
@@ -39,16 +55,30 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {}
   }
 
-  const dictionary = getDictionary(localeParam)
-  const item = dictionary.caseStudyItems.find((caseStudy) => caseStudy.slug === slug)
+  const item = await getCaseStudy(localeParam, slug)
 
   if (!item) {
     return {}
   }
 
+  const url = `/${localeParam}/case-studies/${slug}`
+
   return {
     title: `${item.title} | AGA`,
     description: item.summary,
+    alternates: {
+      canonical: absoluteUrl(url),
+      languages: {
+        en: absoluteUrl(`/en/case-studies/${slug}`),
+        zh: absoluteUrl(`/zh/case-studies/${slug}`),
+      },
+    },
+    openGraph: {
+      title: item.title,
+      description: item.summary,
+      url: absoluteUrl(url),
+      type: "article",
+    },
   }
 }
 
@@ -61,10 +91,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
 
   const locale: Locale = localeParam
   const dictionary = getDictionary(locale)
-  const caseStudies = await getCmsCaseStudies(locale, dictionary.caseStudyItems, {
-    includeFallback: false,
-  })
-  const item = caseStudies.find((caseStudy) => caseStudy.slug === slug)
+  const item = await getCaseStudy(locale, slug)
 
   if (!item) {
     notFound()
@@ -77,28 +104,43 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
           challenge: "挑战",
           solution: "AGA 如何协助",
           result: "成果",
-          snapshot: "项目摘要",
+          snapshot: "影响摘要",
           approach: "实施模板",
-          before: "系统化前",
-          during: "AGA 介入",
-          after: "系统化后",
+          before: "系统化前的业务如何运作？",
+          during: "AGA 如何把流程变成可执行系统？",
+          after: "系统化后产生什么结果？",
           measurement: "关键记录",
+          workflow: "流程焦点",
+          proof: "可验证成果",
         }
       : {
           back: "Back to case studies",
           challenge: "Challenge",
           solution: "How AGA Helped",
           result: "Result",
-          snapshot: "Project Snapshot",
+          snapshot: "Impact Snapshot",
           approach: "Implementation Template",
-          before: "Before Systemization",
-          during: "AGA Intervention",
-          after: "After Systemization",
+          before: "How did the business operate before systemization?",
+          during: "How did AGA turn the workflow into an executable system?",
+          after: "What changed after systemization?",
           measurement: "What To Measure",
+          workflow: "Workflow focus",
+          proof: "Verifiable impact",
         }
+  const snapshotItems = buildImpactSnapshot(item, locale)
 
   return (
     <LocalizedShell locale={locale} path={`/${locale}/case-studies/${slug}`}>
+      <JsonLd
+        data={[
+          caseStudyReportSchema({ locale, ...item }),
+          breadcrumbSchema([
+            { name: "Home", href: `/${locale}` },
+            { name: dictionary.pages.caseStudies.eyebrow, href: `/${locale}/case-studies` },
+            { name: item.title, href: `/${locale}/case-studies/${slug}` },
+          ]),
+        ]}
+      />
       <WebsiteSection>
         <WebsiteContainer className="flex flex-col gap-10">
           <Link
@@ -116,6 +158,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
               accent={item.metric}
               description={item.summary}
             />
+            <ImpactSnapshot title={labels.snapshot} items={snapshotItems} />
             <div className="mt-8 grid gap-4 md:grid-cols-3">
               {[
                 { title: labels.before, body: item.challenge },
@@ -155,7 +198,8 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
               <CardContent className="grid gap-3 text-sm text-muted-foreground">
                 <p><span className="font-semibold text-foreground">{locale === "zh" ? "行业：" : "Industry:"}</span> {item.industry}</p>
                 <p><span className="font-semibold text-foreground">{locale === "zh" ? "核心指标：" : "Main metric:"}</span> {item.metric}</p>
-                <p><span className="font-semibold text-foreground">{locale === "zh" ? "流程焦点：" : "Workflow focus:"}</span> {item.summary}</p>
+                <p><span className="font-semibold text-foreground">{labels.workflow}:</span> {item.summary}</p>
+                <p><span className="font-semibold text-foreground">{labels.proof}:</span> {item.result}</p>
                 <p><span className="font-semibold text-foreground">{locale === "zh" ? "可复盘内容：" : "Review points:"}</span> {locale === "zh" ? "挑战、方案、成果，以及团队采用后的执行节奏。" : "Challenge, solution, result, and the operating rhythm after adoption."}</p>
               </CardContent>
             </Card>
@@ -180,5 +224,47 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
         </WebsiteContainer>
       </WebsiteSection>
     </LocalizedShell>
+  )
+}
+
+function buildImpactSnapshot(item: GeoCaseStudy, locale: Locale) {
+  return locale === "zh"
+    ? [
+        { label: "行业", value: item.industry },
+        { label: "地点信号", value: item.locationSignal || "Malaysia" },
+        { label: "影响指标", value: item.metric },
+        { label: "流程焦点", value: item.workflowFocus || item.summary },
+        { label: "替代旧工具", value: item.legacyToolsReplaced?.join("、") || "WhatsApp、Excel、人工提醒" },
+        { label: "AGA 系统", value: item.agaSystem || "OneSystem + Workflow Registry" },
+        { label: "原本问题", value: item.challenge },
+        { label: "AGA 方案", value: item.solution },
+        { label: "结果", value: item.result },
+      ]
+    : [
+        { label: "Industry", value: item.industry },
+        { label: "Location signal", value: item.locationSignal || "Malaysia" },
+        { label: "Impact metric", value: item.metric },
+        { label: "Workflow focus", value: item.workflowFocus || item.summary },
+        { label: "Legacy tools replaced", value: item.legacyToolsReplaced?.join(", ") || "WhatsApp, Excel, manual reminders" },
+        { label: "AGA system", value: item.agaSystem || "OneSystem + Workflow Registry" },
+        { label: "Original pain", value: item.challenge },
+        { label: "AGA solution", value: item.solution },
+        { label: "Outcome", value: item.result },
+      ]
+}
+
+function ImpactSnapshot({ title, items }: { title: string; items: Array<{ label: string; value: string }> }) {
+  return (
+    <section className="mt-8 rounded-2xl border bg-background p-5" aria-label={title}>
+      <h2 className="text-xl font-bold tracking-normal">{title}</h2>
+      <dl className="mt-5 grid gap-4 md:grid-cols-2">
+        {items.map((item) => (
+          <div key={item.label} className="rounded-xl bg-muted/40 p-4">
+            <dt className="text-xs font-semibold uppercase tracking-widest text-primary">{item.label}</dt>
+            <dd className="mt-2 text-sm leading-6 text-muted-foreground">{item.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
   )
 }

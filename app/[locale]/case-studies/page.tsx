@@ -28,9 +28,7 @@ export default async function CaseStudiesPage({ params }: PageProps) {
 
   const locale: Locale = localeParam
   const dictionary = getDictionary(locale)
-  const caseStudies = await getCmsCaseStudies(locale, dictionary.caseStudyItems, {
-    includeFallback: false,
-  })
+  const caseStudies = await getCmsCaseStudies(locale, dictionary.caseStudyItems)
 
   return (
     <LocalizedShell locale={locale} path={`/${locale}/case-studies`}>
