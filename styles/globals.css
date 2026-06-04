@@ -132,6 +132,7 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
 }
 
@@ -161,5 +162,30 @@
 
   .animate-marquee-left {
     animation: marquee-left 28s linear infinite;
+  }
+
+  .superindividual-reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+      opacity 700ms ease,
+      transform 700ms ease;
+  }
+
+  .superindividual-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .superindividual-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
