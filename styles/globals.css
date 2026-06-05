@@ -155,6 +155,54 @@
   }
 }
 
+@keyframes superindividual-page-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes superindividual-grid-drift {
+  from {
+    background-position:
+      0 0,
+      0 0,
+      0 0;
+  }
+  to {
+    background-position:
+      96px 96px,
+      -96px 96px,
+      0 0;
+  }
+}
+
+@keyframes superindividual-particle-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(42px, -54px, 0);
+  }
+}
+
+@keyframes superindividual-check-pop {
+  0% {
+    transform: scale(0.76);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 @layer utilities {
   .animate-float-slow {
     animation: float-slow 7s ease-in-out infinite;
@@ -176,6 +224,42 @@
     opacity: 1;
     transform: translateY(0);
   }
+
+  .superindividual-page {
+    animation: superindividual-page-in 650ms ease both;
+  }
+
+  .superindividual-grid {
+    background-image:
+      linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(120deg, rgba(232, 82, 26, 0.11) 1px, transparent 1px);
+    background-size:
+      96px 96px,
+      96px 96px,
+      192px 192px;
+    animation: superindividual-grid-drift 24s linear infinite;
+    mask-image: radial-gradient(circle at center, black 0%, black 58%, transparent 86%);
+  }
+
+  .superindividual-particles {
+    background-image:
+      radial-gradient(circle, rgba(232, 82, 26, 0.82) 0 1.5px, transparent 2px),
+      radial-gradient(circle, rgba(255, 255, 255, 0.46) 0 1px, transparent 1.5px);
+    background-position:
+      18px 42px,
+      74px 18px;
+    background-size:
+      168px 168px,
+      132px 132px;
+    animation: superindividual-particle-drift 18s linear infinite alternate;
+    opacity: 0.45;
+  }
+
+  .superindividual-checkmark {
+    animation: superindividual-check-pop 520ms cubic-bezier(0.2, 1.35, 0.35, 1) both;
+  }
+
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -187,5 +271,12 @@
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  .superindividual-page,
+  .superindividual-grid,
+  .superindividual-particles,
+  .superindividual-checkmark {
+    animation: none;
   }
 }
