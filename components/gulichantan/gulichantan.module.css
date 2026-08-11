@@ -121,6 +121,23 @@
     linear-gradient(155deg, #f0c1a8 0%, #f6d8c8 48%, #fff7f2 100%);
 }
 
+.heroCollapseTarget {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 64px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.heroCollapseTarget:focus-visible {
+  outline: 2px solid var(--aga-brand);
+  outline-offset: -4px;
+}
+
 .heroGlow {
   position: absolute;
   inset: auto -70px 30px auto;
@@ -197,12 +214,14 @@
   border: 1px solid rgba(255, 255, 255, 0.58);
   border-radius: 12px;
   background: linear-gradient(135deg, #ff7047 0%, var(--aga-brand) 52%, var(--aga-brand-deep) 100%);
-  padding: 9px 11px;
+  padding: 10px 13px;
   color: #fff;
-  font-size: 10px;
+  font: inherit;
+  font-size: 11px;
   font-weight: 800;
   line-height: 1.1;
   box-shadow: 0 10px 22px rgba(245, 93, 45, 0.28);
+  cursor: pointer;
   transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
@@ -475,6 +494,84 @@
   transform: scale(0.97);
 }
 
+.aiSheetHeader {
+  display: grid;
+  min-height: 48px;
+  grid-template-columns: 38px 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(29, 27, 24, 0.07);
+  border-radius: 16px;
+  background: #f7f5f2;
+  padding: 5px 9px;
+  box-shadow: 0 8px 22px rgba(36, 33, 29, 0.06);
+}
+
+.aiSheetHeader > button,
+.aiSheetMark {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+}
+
+.aiSheetHeader > button {
+  border: 0;
+  background: #fff;
+  color: #3e3934;
+  box-shadow: 0 3px 10px rgba(36, 33, 29, 0.08);
+  cursor: pointer;
+}
+
+.aiSheetHeader > button:hover {
+  color: var(--aga-brand-deep);
+}
+
+.aiSheetHeader > button svg,
+.aiSheetMark svg {
+  width: 17px;
+  height: 17px;
+}
+
+.aiSheetMark {
+  background: #1d1c1a;
+  color: #fff;
+}
+
+.aiSheetHeader > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.aiSheetHeader strong {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+}
+
+.aiSheetHeader div > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  color: #746d65;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.aiSheetHeader div > span svg {
+  width: 10px;
+  height: 10px;
+  color: #35a767;
+}
+
+.aiSheetScroll {
+  scroll-behavior: smooth;
+}
+
 .about {
   padding: 19px 2px 18px;
 }
@@ -674,11 +771,13 @@
   align-items: center;
   justify-content: center;
   gap: 9px;
+  border: 0;
   border-radius: 16px;
   background: linear-gradient(180deg, #ff7047 0%, var(--aga-brand) 54%, var(--aga-brand-deep) 100%);
   color: #fff;
   font-size: 14px;
   font-weight: 800;
+  cursor: pointer;
   box-shadow: 0 12px 26px rgba(245, 93, 45, 0.28);
   transition: transform 160ms ease, box-shadow 160ms ease;
 }
@@ -932,6 +1031,7 @@
   .contactCard,
   .primaryAction,
   .companyPill,
+  .aiSheetHeader > button,
   .dragHandle,
   .tabs button {
     transition: none;

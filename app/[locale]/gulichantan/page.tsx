@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 
 import { GulichanTanContactCard } from "@/components/gulichantan/GulichanTanContactCard"
 import { isLocale, locales, type Locale } from "@/lib/i18n/dictionary"
+import { profile } from "@/src/config/profile"
 
 type GulichanTanPageProps = {
   params: Promise<{ locale: string }>
@@ -10,14 +11,14 @@ type GulichanTanPageProps = {
 
 const metadataByLocale: Record<Locale, { title: string; description: string }> = {
   en: {
-    title: "Tan Chi Shiong | AGA Ventures",
+    title: "CSTAN — Founder & Business Architect",
     description:
-      "Connect with Tan Chi Shiong, founder of AGA Ventures and business systemization architect.",
+      "Meet CSTAN and ask his AI about business systems, automation, AGA Ventures and AI.",
   },
   zh: {
-    title: "陈起祥 | AGA Ventures",
+    title: "CSTAN — 创办人兼企业架构师",
     description:
-      "联系 AGA Ventures 创办人兼企业系统化架构师陈起祥。",
+      "认识 CSTAN，并向他的 AI 了解企业系统、自动化、AGA Ventures 与 AI。",
   },
 }
 
@@ -36,6 +37,8 @@ export async function generateMetadata({
 
   const locale: Locale = localeParam
   const pageMetadata = metadataByLocale[locale]
+  const pageUrl = new URL(`/${locale}/gulichantan`, profile.websiteUrl).toString()
+  const iconUrl = new URL("/icon.png", profile.websiteUrl).toString()
 
   return {
     title: pageMetadata.title,
@@ -53,7 +56,22 @@ export async function generateMetadata({
       type: "profile",
       locale: locale === "en" ? "en_US" : "zh_CN",
       alternateLocale: locale === "en" ? ["zh_CN"] : ["en_US"],
-      url: `/${locale}/gulichantan`,
+      url: pageUrl,
+      siteName: profile.company,
+      images: [
+        {
+          url: iconUrl,
+          width: 820,
+          height: 820,
+          alt: "AGA Ventures",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary",
+      title: pageMetadata.title,
+      description: pageMetadata.description,
+      images: [iconUrl],
     },
   }
 }

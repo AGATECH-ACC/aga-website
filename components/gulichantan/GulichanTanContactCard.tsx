@@ -3,16 +3,19 @@
 import Image from "next/image"
 import Link from "next/link"
 import {
+  useEffect,
   useRef,
   useState,
   type CSSProperties,
   type KeyboardEvent,
+  type MouseEvent,
   type PointerEvent,
   type UIEvent,
 } from "react"
 import {
+  ArrowLeft,
+  Bot,
   BriefcaseBusiness,
-  ArrowUpRight,
   CalendarDays,
   CheckCircle2,
   Globe2,
@@ -27,32 +30,38 @@ import {
 
 import styles from "./gulichantan.module.css"
 
+import { CstanAiChat } from "@/components/gulichantan/CstanAiChat"
 import { InstagramIcon, LinkedInIcon, WhatsAppIcon } from "@/components/icons/BrandIcons"
 import type { Locale } from "@/lib/i18n/dictionary"
+import { localizedProfile, profile } from "@/src/config/profile"
+import { trackCstanEvent } from "@/src/lib/analytics"
 
-const phoneNumber = "+60183576003"
-const email = "enquiry@agaventures.ai"
-const linkedInUrl = "https://www.linkedin.com/company/aga-ventures-ai/"
-const instagramUrl = "https://www.instagram.com/agaventures.ai/"
-const websiteUrl = "https://www.agaventures.ai/"
+const phoneNumber = profile.phone
+const email = profile.email
+const linkedInUrl = profile.linkedinUrl
+const instagramUrl = profile.instagramUrl
+const websiteUrl = profile.websiteUrl
 
 const tabs = ["about", "focus", "experience", "contact"] as const
 type Tab = (typeof tabs)[number]
 
 const content = {
   en: {
-    displayName: "Tan Chi Shiong",
-    headerSubtitle: "Founder, AGA Ventures",
+    displayName: localizedProfile.en.displayName,
+    headerSubtitle: localizedProfile.en.role,
     languageLabel: "切换至中文",
     languageCode: "中",
     share: "Share",
     shareAria: "Share this profile",
     copied: "Copied",
-    shareText: "Connect with Tan Chi Shiong, founder of AGA Ventures.",
+    shareText: `Meet ${profile.name}, ${profile.role} at ${profile.company}.`,
     whatsappMessage: "Hi Chi Shiong, I found your contact page and would like to connect.",
-    eyebrow: "AI Transformation Partner",
-    heroDescription: "Helping SME owners build businesses that run with clarity.",
-    companyCta: "Explore AGA Ventures",
+    eyebrow: "You tapped CSTAN's card ✦",
+    heroDescription: localizedProfile.en.tagline,
+    companyCta: "Ask CSTAN AI",
+    aiTitle: "CSTAN AI",
+    aiStatus: "AI receptionist",
+    backToProfile: "Back to profile",
     stats: [
       { value: "10+ years", label: "Experience" },
       { value: "Founder", label: "AGA Ventures" },
@@ -66,9 +75,8 @@ const content = {
     },
     tabContent: {
       about: {
-        title: "About Chi Shiong",
-        body:
-          "Founder of AGA Ventures and a certified business systemization architect. I help Malaysian SME owners turn scattered work into clear systems, stronger teams, and AI-enabled operations.",
+        title: "About CSTAN",
+        body: localizedProfile.en.description,
         items: [
           "Certified systemization architect",
           "Founder-led SME advisory",
@@ -94,7 +102,7 @@ const content = {
         items: ["WhatsApp for fastest reply", "Email for project briefs", "Instagram & LinkedIn updates"],
       },
     },
-    profileTitle: "Business Systemization Architect",
+    profileTitle: localizedProfile.en.role,
     whatsapp: "WhatsApp",
     whatsappAction: "Send a quick message",
     phone: "Phone",
@@ -105,7 +113,7 @@ const content = {
     instagramAction: "Follow AGA",
     website: "Website",
     websiteAction: "Visit AGA Ventures",
-    cta: "Start a conversation",
+    cta: "Talk to CSTAN",
     saveContact: "Save contact",
     responseNote: "Usually replies within one business day",
     moreInfoTitle: "How I can help",
@@ -152,8 +160,8 @@ const content = {
     callAria: `Call ${phoneNumber}`,
   },
   zh: {
-    displayName: "陈起祥",
-    headerSubtitle: "AGA Ventures 创办人",
+    displayName: localizedProfile.zh.displayName,
+    headerSubtitle: localizedProfile.zh.role,
     languageLabel: "Switch to English",
     languageCode: "EN",
     share: "分享",
@@ -161,9 +169,12 @@ const content = {
     copied: "已复制",
     shareText: "联系 AGA Ventures 创办人陈起祥。",
     whatsappMessage: "你好起祥，我从你的联系页面找到你，想和你聊聊。",
-    eyebrow: "AI 转型伙伴",
-    heroDescription: "帮助 SME 老板打造清晰运作的企业。",
-    companyCta: "了解 AGA Ventures",
+    eyebrow: "你轻触了 CSTAN 的名片 ✦",
+    heroDescription: localizedProfile.zh.tagline,
+    companyCta: "问 CSTAN AI",
+    aiTitle: "CSTAN AI",
+    aiStatus: "AI 接待助手",
+    backToProfile: "返回个人资料",
     stats: [
       { value: "10+ 年", label: "实战经验" },
       { value: "创办人", label: "AGA Ventures" },
@@ -178,8 +189,7 @@ const content = {
     tabContent: {
       about: {
         title: "关于陈起祥",
-        body:
-          "AGA Ventures 创办人兼认证企业系统化架构师。我协助马来西亚 SME 老板把分散的工作转化为清晰系统、更强团队与 AI 驱动的运营模式。",
+        body: localizedProfile.zh.description,
         items: ["认证企业系统化架构师", "创办人级 SME 顾问", "立足马来西亚 · GMT+8"],
       },
       focus: {
@@ -201,7 +211,7 @@ const content = {
         items: ["WhatsApp 最快回复", "电邮发送项目简介", "Instagram 与 LinkedIn 动态"],
       },
     },
-    profileTitle: "企业系统化架构师",
+    profileTitle: localizedProfile.zh.role,
     whatsapp: "WhatsApp",
     whatsappAction: "发送即时消息",
     phone: "电话",
@@ -212,7 +222,7 @@ const content = {
     instagramAction: "关注 AGA",
     website: "官方网站",
     websiteAction: "访问 AGA Ventures",
-    cta: "开始联系",
+    cta: "联系 CSTAN",
     saveContact: "保存联系人",
     responseNote: "通常在一个工作日内回复",
     moreInfoTitle: "我能如何协助",
@@ -262,6 +272,7 @@ const content = {
 
 export function GulichanTanContactCard({ locale }: { locale: Locale }) {
   const [activeTab, setActiveTab] = useState<Tab>("about")
+  const [isAiOpen, setIsAiOpen] = useState(false)
   const [isSheetExpanded, setIsSheetExpanded] = useState(false)
   const [isSheetDragging, setIsSheetDragging] = useState(false)
   const [sheetDragOffset, setSheetDragOffset] = useState(0)
@@ -274,8 +285,14 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
   const copy = content[locale]
   const alternateLocale = locale === "en" ? "zh" : "en"
   const activeContent = copy.tabContent[activeTab]
-  const whatsappUrl = `https://wa.me/${phoneNumber.replace(/\D/g, "")}?text=${encodeURIComponent(copy.whatsappMessage)}`
-  const vCardHref = "/api/contact/tan-chi-shiong"
+  const whatsappUrl = profile.whatsappUrl
+    ? `${profile.whatsappUrl}?text=${encodeURIComponent(copy.whatsappMessage)}`
+    : ""
+  const vCardHref = "/api/contact"
+
+  useEffect(() => {
+    trackCstanEvent("nfc_landing_viewed", { locale })
+  }, [locale])
 
   async function shareProfile() {
     const shareData = {
@@ -314,6 +331,7 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
   }
 
   function selectTab(tab: Tab) {
+    setIsAiOpen(false)
     setActiveTab(tab)
     setIsSheetExpanded(true)
     window.requestAnimationFrame(() => {
@@ -334,7 +352,22 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
 
   function collapseSheet() {
     sheetScrollRef.current?.scrollTo({ top: 0 })
+    setIsAiOpen(false)
     setIsSheetExpanded(false)
+  }
+
+  function openAiChat() {
+    setIsAiOpen(true)
+    setIsSheetExpanded(true)
+    trackCstanEvent("ask_cstan_ai_clicked", { locale })
+    window.requestAnimationFrame(() => {
+      sheetScrollRef.current?.scrollTo({ top: 0 })
+    })
+  }
+
+  function openContactFromAi() {
+    setIsAiOpen(false)
+    selectTab("contact")
   }
 
   function handleSheetPointerDown(event: PointerEvent<HTMLButtonElement>) {
@@ -391,6 +424,17 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
     else setIsSheetExpanded(true)
   }
 
+  function handleBackgroundCollapse(event: MouseEvent<HTMLElement>) {
+    if (!isSheetExpanded) return
+
+    const target = event.target as HTMLElement
+    if (target.closest("a, button, input, textarea, select, [role='button'], [role='link']")) {
+      return
+    }
+
+    collapseSheet()
+  }
+
   return (
     <main className={styles.stage}>
       <article
@@ -398,7 +442,7 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
         aria-label={locale === "zh" ? `${copy.displayName}联系资料` : `${copy.displayName} contact profile`}
         lang={locale === "zh" ? "zh-CN" : "en"}
       >
-        <header className={styles.header}>
+        <header className={styles.header} onClick={handleBackgroundCollapse}>
           <Link
             href={`/${alternateLocale}/gulichantan`}
             className={`${styles.iconButton} ${styles.languageButton}`}
@@ -418,7 +462,11 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
           </button>
         </header>
 
-        <section className={styles.hero} aria-labelledby="profile-name">
+        <section
+          className={styles.hero}
+          aria-labelledby="profile-name"
+          onClick={handleBackgroundCollapse}
+        >
           <div className={styles.heroGlow} aria-hidden="true" />
           <div className={styles.portrait}>
             <Image
@@ -436,10 +484,10 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
             </p>
             <h1 id="profile-name">{copy.displayName}</h1>
             <p className={styles.heroDescription}>{copy.heroDescription}</p>
-            <a className={styles.companyPill} href={websiteUrl} target="_blank" rel="noreferrer">
+            <button className={styles.companyPill} type="button" onClick={openAiChat}>
+              <Bot aria-hidden="true" />
               <span>{copy.companyCta}</span>
-              <ArrowUpRight aria-hidden="true" />
-            </a>
+            </button>
           </div>
 
           <div className={styles.stats} aria-label={copy.highlightsLabel}>
@@ -459,6 +507,15 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
               <span>{copy.stats[2].label}</span>
             </div>
           </div>
+
+          {isSheetExpanded && (
+            <button
+              type="button"
+              className={styles.heroCollapseTarget}
+              aria-label={copy.collapseDetails}
+              onClick={collapseSheet}
+            />
+          )}
         </section>
 
         <section
@@ -480,59 +537,81 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
             >
               <span className={styles.pull} aria-hidden="true" />
             </button>
-            <div className={styles.tabs} role="tablist" aria-label={copy.tabsLabel}>
-              {tabs.map((tab, index) => (
-                <button
-                  key={tab}
-                  ref={(element) => {
-                    tabRefs.current[index] = element
-                  }}
-                  id={`profile-tab-${tab}`}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeTab === tab}
-                  aria-controls="profile-tab-panel"
-                  tabIndex={activeTab === tab ? 0 : -1}
-                  className={activeTab === tab ? styles.activeTab : undefined}
-                  onClick={() => selectTab(tab)}
-                  onKeyDown={(event) => handleTabKeyDown(event, index)}
-                >
-                  {copy.tabs[tab]}
+            {isAiOpen ? (
+              <div className={styles.aiSheetHeader}>
+                <button type="button" onClick={() => setIsAiOpen(false)} aria-label={copy.backToProfile}>
+                  <ArrowLeft aria-hidden="true" />
                 </button>
-              ))}
-            </div>
+                <span className={styles.aiSheetMark} aria-hidden="true">
+                  <Bot />
+                </span>
+                <div>
+                  <strong>{copy.aiTitle}</strong>
+                  <span>
+                    <CheckCircle2 aria-hidden="true" />
+                    {copy.aiStatus}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className={styles.tabs} role="tablist" aria-label={copy.tabsLabel}>
+                {tabs.map((tab, index) => (
+                  <button
+                    key={tab}
+                    ref={(element) => {
+                      tabRefs.current[index] = element
+                    }}
+                    id={`profile-tab-${tab}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === tab}
+                    aria-controls="profile-tab-panel"
+                    tabIndex={activeTab === tab ? 0 : -1}
+                    className={activeTab === tab ? styles.activeTab : undefined}
+                    onClick={() => selectTab(tab)}
+                    onKeyDown={(event) => handleTabKeyDown(event, index)}
+                  >
+                    {copy.tabs[tab]}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div
             id="profile-details-scroll"
             ref={sheetScrollRef}
-            className={styles.sheetScroll}
+            className={`${styles.sheetScroll} ${isAiOpen ? styles.aiSheetScroll : ""}`}
             role="region"
             aria-label={copy.detailsLabel}
             data-testid="profile-details-scroll"
             tabIndex={0}
             onScroll={handleSheetScroll}
           >
-            <div
-              key={`${locale}-${activeTab}`}
-              id="profile-tab-panel"
-              className={`${styles.about} ${styles.tabPanel}`}
-              role="tabpanel"
-              aria-labelledby={`profile-tab-${activeTab}`}
-            >
-              <h2>{activeContent.title}</h2>
-              <p>{activeContent.body}</p>
-              <ul className={styles.panelItems} aria-label={`${activeContent.title} highlights`}>
-                {activeContent.items.map((item) => (
-                  <li key={item}>
-                    <CheckCircle2 aria-hidden="true" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {isAiOpen ? (
+              <CstanAiChat locale={locale} onOpenContact={openContactFromAi} />
+            ) : (
+              <>
+                <div
+                  key={`${locale}-${activeTab}`}
+                  id="profile-tab-panel"
+                  className={`${styles.about} ${styles.tabPanel}`}
+                  role="tabpanel"
+                  aria-labelledby={`profile-tab-${activeTab}`}
+                >
+                  <h2>{activeContent.title}</h2>
+                  <p>{activeContent.body}</p>
+                  <ul className={styles.panelItems} aria-label={`${activeContent.title} highlights`}>
+                    {activeContent.items.map((item) => (
+                      <li key={item}>
+                        <CheckCircle2 aria-hidden="true" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-            <div key={`${locale}-${activeTab}-details`} className={styles.tabDetails}>
+                <div key={`${locale}-${activeTab}-details`} className={styles.tabDetails}>
               {activeTab === "about" && (
                 <div className={styles.profileRow}>
                   <div className={styles.avatar}>
@@ -542,12 +621,21 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
                     <strong>{copy.displayName}</strong>
                     <span>{copy.profileTitle}</span>
                   </div>
-                  <a className={styles.contactIcon} href={whatsappUrl} aria-label={copy.messageAria}>
-                    <WhatsAppIcon />
-                  </a>
-                  <a className={styles.contactIcon} href={`tel:${phoneNumber}`} aria-label={copy.callAria}>
-                    <Phone aria-hidden="true" />
-                  </a>
+                  {profile.whatsappUrl && (
+                    <a
+                      className={styles.contactIcon}
+                      href={whatsappUrl}
+                      aria-label={copy.messageAria}
+                      onClick={() => trackCstanEvent("whatsapp_clicked", { location: "profile", locale })}
+                    >
+                      <WhatsAppIcon />
+                    </a>
+                  )}
+                  {profile.phone && (
+                    <a className={styles.contactIcon} href={`tel:${phoneNumber}`} aria-label={copy.callAria}>
+                      <Phone aria-hidden="true" />
+                    </a>
+                  )}
                 </div>
               )}
 
@@ -589,75 +677,113 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
 
               {activeTab === "contact" && (
                 <div className={styles.contactGrid}>
-                  <a href={whatsappUrl} className={styles.contactCard}>
-                    <span>
-                      <WhatsAppIcon />
-                      {copy.whatsapp}
-                    </span>
-                    <strong>{copy.whatsappAction}</strong>
-                  </a>
-                  <a href={`tel:${phoneNumber}`} className={styles.contactCard}>
-                    <span>
-                      <Phone aria-hidden="true" />
-                      {copy.phone}
-                    </span>
-                    <strong>{copy.phoneAction}</strong>
-                  </a>
-                  <a href={`mailto:${email}`} className={styles.contactCard}>
-                    <span>
-                      <Mail aria-hidden="true" />
-                      {copy.email}
-                    </span>
-                    <strong>{copy.emailAction}</strong>
-                  </a>
-                  <a href={linkedInUrl} target="_blank" rel="noreferrer" className={styles.contactCard}>
-                    <span>
-                      <LinkedInIcon />
-                      LinkedIn
-                    </span>
-                    <strong>{copy.linkedInAction}</strong>
-                  </a>
-                  <a href={instagramUrl} target="_blank" rel="noreferrer" className={styles.contactCard}>
-                    <span>
-                      <InstagramIcon />
-                      Instagram
-                    </span>
-                    <strong>{copy.instagramAction}</strong>
-                  </a>
-                  <a href={websiteUrl} target="_blank" rel="noreferrer" className={styles.contactCard}>
-                    <span>
-                      <Globe2 aria-hidden="true" />
-                      {copy.website}
-                    </span>
-                    <strong>{copy.websiteAction}</strong>
-                  </a>
+                  {profile.whatsappUrl && (
+                    <a
+                      href={whatsappUrl}
+                      className={styles.contactCard}
+                      onClick={() => trackCstanEvent("whatsapp_clicked", { location: "contact_tab", locale })}
+                    >
+                      <span>
+                        <WhatsAppIcon />
+                        {copy.whatsapp}
+                      </span>
+                      <strong>{copy.whatsappAction}</strong>
+                    </a>
+                  )}
+                  {profile.phone && (
+                    <a href={`tel:${phoneNumber}`} className={styles.contactCard}>
+                      <span>
+                        <Phone aria-hidden="true" />
+                        {copy.phone}
+                      </span>
+                      <strong>{copy.phoneAction}</strong>
+                    </a>
+                  )}
+                  {profile.email && (
+                    <a href={`mailto:${email}`} className={styles.contactCard}>
+                      <span>
+                        <Mail aria-hidden="true" />
+                        {copy.email}
+                      </span>
+                      <strong>{copy.emailAction}</strong>
+                    </a>
+                  )}
+                  {profile.linkedinUrl && (
+                    <a href={linkedInUrl} target="_blank" rel="noreferrer" className={styles.contactCard}>
+                      <span>
+                        <LinkedInIcon />
+                        LinkedIn
+                      </span>
+                      <strong>{copy.linkedInAction}</strong>
+                    </a>
+                  )}
+                  {profile.instagramUrl && (
+                    <a href={instagramUrl} target="_blank" rel="noreferrer" className={styles.contactCard}>
+                      <span>
+                        <InstagramIcon />
+                        Instagram
+                      </span>
+                      <strong>{copy.instagramAction}</strong>
+                    </a>
+                  )}
+                  {profile.websiteUrl && (
+                    <a
+                      href={websiteUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={styles.contactCard}
+                      onClick={() => trackCstanEvent("website_clicked", { location: "contact_tab", locale })}
+                    >
+                      <span>
+                        <Globe2 aria-hidden="true" />
+                        {copy.website}
+                      </span>
+                      <strong>{copy.websiteAction}</strong>
+                    </a>
+                  )}
                 </div>
               )}
-            </div>
+                </div>
+              </>
+            )}
           </div>
 
-          <div className={styles.actionDock}>
-            <div className={styles.actions}>
-              <a className={styles.primaryAction} href={whatsappUrl}>
-                <WhatsAppIcon />
-                {copy.cta}
-              </a>
-              <a
-                className={styles.saveButton}
-                href={vCardHref}
-                download="tan-chi-shiong.vcf"
-                aria-label={copy.saveContact}
-              >
-                <UserPlus aria-hidden="true" />
-                <span>{copy.saveContact}</span>
-              </a>
-            </div>
+          {!isAiOpen && (
+            <div className={styles.actionDock}>
+              <div className={styles.actions}>
+                {profile.whatsappUrl ? (
+                  <a
+                    className={styles.primaryAction}
+                    href={whatsappUrl}
+                    onClick={() => trackCstanEvent("whatsapp_clicked", { location: "action_dock", locale })}
+                  >
+                    <WhatsAppIcon />
+                    {copy.cta}
+                  </a>
+                ) : (
+                  <button className={styles.primaryAction} type="button" onClick={openContactFromAi}>
+                    <Bot aria-hidden="true" />
+                    {copy.cta}
+                  </button>
+                )}
+                <a
+                  className={styles.saveButton}
+                  href={vCardHref}
+                  download="cstan.vcf"
+                  aria-label={copy.saveContact}
+                  onClick={() => trackCstanEvent("save_contact_clicked", { location: "action_dock", locale })}
+                >
+                  <UserPlus aria-hidden="true" />
+                  <span>{copy.saveContact}</span>
+                </a>
+              </div>
 
-            <p className={styles.responseNote}>
-              <CheckCircle2 aria-hidden="true" />
-              {copy.responseNote}
-            </p>
-          </div>
+              <p className={styles.responseNote}>
+                <CheckCircle2 aria-hidden="true" />
+                {copy.responseNote}
+              </p>
+            </div>
+          )}
         </section>
       </article>
     </main>
