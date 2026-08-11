@@ -3,10 +3,7 @@
 import {
   ArrowUpRight,
   LoaderCircle,
-  Mail,
   SendHorizontal,
-  UserRound,
-  UserPlus,
 } from "lucide-react"
 import Image from "next/image"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -24,7 +21,6 @@ type ChatMessage = {
 
 type ChatResponse = {
   message?: string
-  showContactCTA?: boolean
 }
 
 const copy = {
@@ -38,18 +34,14 @@ const copy = {
       "What kind of systems do you build?",
       "I have a business problem",
     ],
+    suggestionsLabel: "Suggested questions",
     inputPlaceholder: "Ask about GULICHAN or tell me about your business...",
     send: "Send message",
     typing: "GULICHAN AI is thinking",
-    error: "GULICHAN AI is taking a short break 😄. You can still contact GULICHAN directly below.",
+    error: "GULICHAN AI is taking a short break 😄. Please try again in a moment.",
     conversationLimit:
       "You've officially interviewed my AI enough 😄\n\nIf what GULICHAN does sounds relevant, the best next step is probably to talk to the real human.",
-    talkTitle: "Let's talk",
-    talkBody:
-      "If something here sounds relevant, the fastest way is probably just to talk to GULICHAN.",
     talkToCstan: "Talk to GULICHAN",
-    email: "Email",
-    save: "Save Contact",
     assistantLabel: "GULICHAN AI",
     youLabel: "You",
   },
@@ -63,17 +55,14 @@ const copy = {
       "你们会打造什么系统？",
       "我有一个企业问题",
     ],
+    suggestionsLabel: "推荐问题",
     inputPlaceholder: "询问 GULICHAN，或告诉我你的企业遇到什么问题……",
     send: "发送消息",
     typing: "GULICHAN AI 正在思考",
-    error: "GULICHAN AI 正在休息一下 😄。你仍然可以在下方直接联系 GULICHAN。",
+    error: "GULICHAN AI 正在休息一下 😄。请稍后再试。",
     conversationLimit:
       "你已经把我的 AI 访问得很完整了 😄\n\n如果 GULICHAN 的工作和你有关，下一步最好直接和真人聊聊。",
-    talkTitle: "我们聊聊",
-    talkBody: "如果这里有任何内容与你相关，最快的方式就是直接和 GULICHAN 谈一谈。",
     talkToCstan: "联系 GULICHAN",
-    email: "电邮",
-    save: "保存联系人",
     assistantLabel: "GULICHAN AI",
     youLabel: "你",
   },
@@ -90,7 +79,6 @@ export function CstanAiChat({ locale }: { locale: Locale }) {
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [showContactCTA, setShowContactCTA] = useState(false)
   const endRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -98,6 +86,7 @@ export function CstanAiChat({ locale }: { locale: Locale }) {
     () => messages.filter((message) => message.role === "user").length,
     [messages],
   )
+  const showLateContactCTA = userMessageCount >= 6
   const showConversationLimit = userMessageCount >= 7
   const whatsappHref = profile.whatsappUrl
     ? `${profile.whatsappUrl}?text=${encodeURIComponent(
@@ -113,7 +102,7 @@ export function CstanAiChat({ locale }: { locale: Locale }) {
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" })
-  }, [isLoading, messages, showContactCTA])
+  }, [isLoading, messages, showLateContactCTA])
 
   const sendMessage = useCallback(
     async (rawMessage: string, source: "input" | "suggestion" = "input") => {
@@ -149,24 +138,20 @@ export function CstanAiChat({ locale }: { locale: Locale }) {
           ...current,
           { id: createMessageId(), role: "assistant", content: assistantMessage },
         ])
-        setShowContactCTA(
-          (current) => current || Boolean(payload.showContactCTA) || userMessageCount + 1 >= 7,
-        )
       } catch {
         setMessages((current) => [
           ...current,
           { id: createMessageId(), role: "assistant", content: text.error },
         ])
-        setShowContactCTA(true)
       } finally {
         setIsLoading(false)
       }
     },
-    [isLoading, locale, messages, text.error, userMessageCount],
+    [isLoading, locale, messages, text.error],
   )
 
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col pb-5 pt-4">
+    <div className="mx-auto flex min-h-full w-full max-w-xl flex-col pb-5 pt-4">
       <div className="space-y-3" aria-live="polite" aria-label="GULICHAN AI conversation">
         {messages.map((message) => (
           <article
@@ -219,16 +204,16 @@ export function CstanAiChat({ locale }: { locale: Locale }) {
       </div>
 
       {userMessageCount === 0 && (
-        <div className="mt-5 grid gap-2" aria-label="Suggested questions">
+        <div className="mt-5 flex flex-wrap gap-2" aria-label={text.suggestionsLabel}>
           {text.suggestions.map((question) => (
             <button
               key={question}
               type="button"
               onClick={() => sendMessage(question, "suggestion")}
-              className="flex min-h-11 items-center justify-between gap-3 rounded-2xl border border-[#e6dfd7] bg-white px-4 py-2.5 text-left text-[11px] font-bold text-[#514b45] shadow-sm transition hover:-translate-y-0.5 hover:border-[#f55d2d]/45 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f55d2d]"
+              className="inline-flex min-h-9 max-w-full items-center justify-center gap-2 rounded-xl border border-[#e6dfd7] bg-[#fbfaf8] px-3 py-2 text-left text-[10px] font-bold leading-snug text-[#514b45] shadow-sm transition hover:-translate-y-0.5 hover:border-[#f55d2d]/45 hover:bg-white hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f55d2d]"
             >
               <span>{question}</span>
-              <ArrowUpRight className="size-4 shrink-0 text-[#f55d2d]" aria-hidden="true" />
+              <ArrowUpRight className="size-3.5 shrink-0 text-[#f55d2d]" aria-hidden="true" />
             </button>
           ))}
         </div>
@@ -240,61 +225,19 @@ export function CstanAiChat({ locale }: { locale: Locale }) {
         </div>
       )}
 
-      <section
-        className={`mt-6 rounded-[22px] border p-4 transition ${
-          showContactCTA || showConversationLimit
-            ? "border-[#f55d2d]/35 bg-[#fff7f3] shadow-[0_12px_28px_rgba(245,93,45,0.12)]"
-            : "border-[#e8e1d9] bg-white"
-        }`}
-        aria-labelledby="cstan-ai-contact-title"
-      >
-        <div className="flex items-start gap-3">
-          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#fff0e9] text-[#d9471d]">
-            <UserRound className="size-5" aria-hidden="true" />
-          </span>
-          <div>
-            <h3 id="cstan-ai-contact-title" className="text-[15px] font-black tracking-[-0.025em]">
-              {text.talkTitle}
-            </h3>
-            <p className="mt-1 text-[10px] font-medium leading-relaxed text-[#716960]">
-              {text.talkBody}
-            </p>
-          </div>
-        </div>
-
+      {showLateContactCTA && whatsappHref && (
         <a
           href={whatsappHref}
           onClick={() => trackCstanEvent("whatsapp_clicked", { location: "ai_chat", locale })}
-          className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#1d1c1a] px-4 text-[12px] font-black text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f55d2d]"
+          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#1d1c1a] px-4 text-[12px] font-black text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f55d2d]"
         >
           <WhatsAppIcon className="size-4" />
           {text.talkToCstan}
         </a>
-
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          {profile.email && (
-            <a
-              href={`mailto:${profile.email}`}
-              className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#ded8d1] bg-white px-3 text-[10px] font-extrabold text-[#514b45]"
-            >
-              <Mail className="size-4" aria-hidden="true" />
-              {text.email}
-            </a>
-          )}
-          <a
-            href="/api/contact"
-            download="gulichan.vcf"
-            onClick={() => trackCstanEvent("save_contact_clicked", { location: "ai_chat", locale })}
-            className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#f55d2d]/35 bg-white px-3 text-[10px] font-extrabold text-[#d9471d]"
-          >
-            <UserPlus className="size-4" aria-hidden="true" />
-            {text.save}
-          </a>
-        </div>
-      </section>
+      )}
 
       <form
-        className="sticky bottom-0 z-10 -mx-1 mt-5 bg-gradient-to-t from-white via-white to-white/0 px-1 pb-1 pt-5"
+        className="sticky bottom-0 z-10 -mx-1 mt-auto bg-gradient-to-t from-white via-white to-white/0 px-1 pb-1 pt-6"
         onSubmit={(event) => {
           event.preventDefault()
           void sendMessage(input)

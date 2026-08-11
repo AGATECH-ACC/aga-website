@@ -521,7 +521,7 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
         </section>
 
         <section
-          className={`${styles.sheet} ${isSheetExpanded ? styles.sheetExpanded : ""} ${isSheetDragging ? styles.sheetDragging : ""}`}
+          className={`${styles.sheet} ${isSheetExpanded ? styles.sheetExpanded : ""} ${isAiOpen ? styles.sheetAiOpen : ""} ${isSheetDragging ? styles.sheetDragging : ""}`}
           style={{ "--sheet-drag-offset": `${sheetDragOffset}px` } as CSSProperties}
           onPointerMove={handleSheetPointerMove}
           onPointerUp={finishSheetDrag}
