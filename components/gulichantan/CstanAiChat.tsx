@@ -2,17 +2,16 @@
 
 import {
   ArrowUpRight,
-  Bot,
-  Globe2,
   LoaderCircle,
   Mail,
   SendHorizontal,
   UserRound,
   UserPlus,
 } from "lucide-react"
+import Image from "next/image"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import { LinkedInIcon, WhatsAppIcon } from "@/components/icons/BrandIcons"
+import { WhatsAppIcon } from "@/components/icons/BrandIcons"
 import type { Locale } from "@/lib/i18n/dictionary"
 import { profile } from "@/src/config/profile"
 import { trackCstanEvent } from "@/src/lib/analytics"
@@ -31,57 +30,51 @@ type ChatResponse = {
 const copy = {
   en: {
     greeting:
-      "Hey 👋 I'm CSTAN's AI.\n\nYou probably just tapped his NFC card.\n\nI can tell you what he does, what AGA builds, or help you figure out whether there's something worth discussing with him.",
+      "Hey 👋 I'm GULICHAN's AI.\n\nYou probably just tapped his NFC card.\n\nI can tell you what he does, what AGA builds, or help you figure out whether there's something worth discussing with him.",
     suggestions: [
-      "What does CSTAN do?",
+      "What does GULICHAN do?",
       "What is AGA OneSystem?",
       "How can AGA help my business?",
       "What kind of systems do you build?",
       "I have a business problem",
     ],
-    inputPlaceholder: "Ask about CSTAN or tell me about your business...",
+    inputPlaceholder: "Ask about GULICHAN or tell me about your business...",
     send: "Send message",
-    typing: "CSTAN AI is thinking",
-    error: "CSTAN AI is taking a short break 😄. You can still contact CSTAN directly below.",
+    typing: "GULICHAN AI is thinking",
+    error: "GULICHAN AI is taking a short break 😄. You can still contact GULICHAN directly below.",
     conversationLimit:
-      "You've officially interviewed my AI enough 😄\n\nIf what CSTAN does sounds relevant, the best next step is probably to talk to the real human.",
+      "You've officially interviewed my AI enough 😄\n\nIf what GULICHAN does sounds relevant, the best next step is probably to talk to the real human.",
     talkTitle: "Let's talk",
     talkBody:
-      "If something here sounds relevant, the fastest way is probably just to talk to CSTAN.",
-    talkToCstan: "Talk to CSTAN",
-    whatsapp: "WhatsApp CSTAN",
-    website: "Visit AGA Ventures",
-    linkedin: "LinkedIn",
+      "If something here sounds relevant, the fastest way is probably just to talk to GULICHAN.",
+    talkToCstan: "Talk to GULICHAN",
     email: "Email",
     save: "Save Contact",
-    assistantLabel: "CSTAN AI",
+    assistantLabel: "GULICHAN AI",
     youLabel: "You",
   },
   zh: {
     greeting:
-      "嗨 👋 我是 CSTAN 的 AI。\n\n你大概刚刚轻触了他的 NFC 名片。\n\n我可以告诉你他在做什么、AGA 在打造什么，或帮你判断现在的问题是否值得和他进一步聊聊。",
+      "嗨 👋 我是 GULICHAN 的 AI。\n\n你大概刚刚轻触了他的 NFC 名片。\n\n我可以告诉你他在做什么、AGA 在打造什么，或帮你判断现在的问题是否值得和他进一步聊聊。",
     suggestions: [
-      "CSTAN 是做什么的？",
+      "GULICHAN 是做什么的？",
       "什么是 AGA OneSystem？",
       "AGA 如何帮助我的企业？",
       "你们会打造什么系统？",
       "我有一个企业问题",
     ],
-    inputPlaceholder: "询问 CSTAN，或告诉我你的企业遇到什么问题……",
+    inputPlaceholder: "询问 GULICHAN，或告诉我你的企业遇到什么问题……",
     send: "发送消息",
-    typing: "CSTAN AI 正在思考",
-    error: "CSTAN AI 正在休息一下 😄。你仍然可以在下方直接联系 CSTAN。",
+    typing: "GULICHAN AI 正在思考",
+    error: "GULICHAN AI 正在休息一下 😄。你仍然可以在下方直接联系 GULICHAN。",
     conversationLimit:
-      "你已经把我的 AI 访问得很完整了 😄\n\n如果 CSTAN 的工作和你有关，下一步最好直接和真人聊聊。",
+      "你已经把我的 AI 访问得很完整了 😄\n\n如果 GULICHAN 的工作和你有关，下一步最好直接和真人聊聊。",
     talkTitle: "我们聊聊",
-    talkBody: "如果这里有任何内容与你相关，最快的方式就是直接和 CSTAN 谈一谈。",
-    talkToCstan: "联系 CSTAN",
-    whatsapp: "WhatsApp CSTAN",
-    website: "访问 AGA Ventures",
-    linkedin: "LinkedIn",
+    talkBody: "如果这里有任何内容与你相关，最快的方式就是直接和 GULICHAN 谈一谈。",
+    talkToCstan: "联系 GULICHAN",
     email: "电邮",
     save: "保存联系人",
-    assistantLabel: "CSTAN AI",
+    assistantLabel: "GULICHAN AI",
     youLabel: "你",
   },
 } as const
@@ -90,13 +83,7 @@ function createMessageId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
-export function CstanAiChat({
-  locale,
-  onOpenContact,
-}: {
-  locale: Locale
-  onOpenContact: () => void
-}) {
+export function CstanAiChat({ locale }: { locale: Locale }) {
   const text = copy[locale]
   const [messages, setMessages] = useState<ChatMessage[]>([
     { id: "cstan-ai-greeting", role: "assistant", content: text.greeting },
@@ -115,8 +102,8 @@ export function CstanAiChat({
   const whatsappHref = profile.whatsappUrl
     ? `${profile.whatsappUrl}?text=${encodeURIComponent(
         locale === "zh"
-          ? "你好 CSTAN，我刚刚体验了你的 NFC AI 名片，想进一步聊聊。"
-          : "Hi CSTAN, I just used your NFC AI card and would like to continue the conversation.",
+          ? "你好 GULICHAN，我刚刚体验了你的 NFC AI 名片，想进一步聊聊。"
+          : "Hi GULICHAN, I just used your NFC AI card and would like to continue the conversation.",
       )}`
     : ""
 
@@ -180,15 +167,21 @@ export function CstanAiChat({
 
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col pb-5 pt-4">
-      <div className="space-y-3" aria-live="polite" aria-label="CSTAN AI conversation">
+      <div className="space-y-3" aria-live="polite" aria-label="GULICHAN AI conversation">
         {messages.map((message) => (
           <article
             key={message.id}
             className={`flex items-end gap-2.5 ${message.role === "user" ? "justify-end" : "justify-start"}`}
           >
             {message.role === "assistant" && (
-              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-[#1d1c1a] text-white shadow-sm">
-                <Bot className="size-4" aria-hidden="true" />
+              <span className="relative size-8 shrink-0 overflow-hidden rounded-full border border-white/80 bg-[#9d5c3a] shadow-sm">
+                <Image
+                  src="/assets/tan-chi-shiong-profile.png"
+                  alt=""
+                  fill
+                  sizes="32px"
+                  className="object-cover"
+                />
                 <span className="sr-only">{text.assistantLabel}</span>
               </span>
             )}
@@ -207,8 +200,15 @@ export function CstanAiChat({
 
         {isLoading && (
           <div className="flex items-center gap-2.5 text-[#726b63]" role="status">
-            <span className="grid size-8 shrink-0 place-items-center rounded-full bg-[#1d1c1a] text-white">
-              <Bot className="size-4" aria-hidden="true" />
+            <span className="relative size-8 shrink-0 overflow-hidden rounded-full border border-white/80 bg-[#9d5c3a] shadow-sm">
+              <Image
+                src="/assets/tan-chi-shiong-profile.png"
+                alt=""
+                fill
+                sizes="32px"
+                className="object-cover"
+              />
+              <span className="sr-only">{text.assistantLabel}</span>
             </span>
             <span className="inline-flex items-center gap-2 rounded-[18px] rounded-bl-md bg-[#f7f5f2] px-4 py-3 text-[11px] font-semibold">
               <LoaderCircle className="size-4 animate-spin text-[#f55d2d]" aria-hidden="true" />
@@ -262,49 +262,16 @@ export function CstanAiChat({
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={onOpenContact}
+        <a
+          href={whatsappHref}
+          onClick={() => trackCstanEvent("whatsapp_clicked", { location: "ai_chat", locale })}
           className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#1d1c1a] px-4 text-[12px] font-black text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f55d2d]"
         >
-          <UserRound className="size-4" aria-hidden="true" />
+          <WhatsAppIcon className="size-4" />
           {text.talkToCstan}
-        </button>
+        </a>
 
         <div className="mt-3 grid grid-cols-2 gap-2">
-          {profile.whatsappUrl && (
-            <a
-              href={whatsappHref}
-              onClick={() => trackCstanEvent("whatsapp_clicked", { location: "ai_chat", locale })}
-              className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#25d366]/35 bg-white px-3 text-[10px] font-extrabold text-[#178c46]"
-            >
-              <WhatsAppIcon className="size-4" />
-              {text.whatsapp}
-            </a>
-          )}
-          {profile.websiteUrl && (
-            <a
-              href={profile.websiteUrl}
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => trackCstanEvent("website_clicked", { location: "ai_chat", locale })}
-              className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#ded8d1] bg-white px-3 text-[10px] font-extrabold text-[#514b45]"
-            >
-              <Globe2 className="size-4" aria-hidden="true" />
-              {text.website}
-            </a>
-          )}
-          {profile.linkedinUrl && (
-            <a
-              href={profile.linkedinUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#ded8d1] bg-white px-3 text-[10px] font-extrabold text-[#514b45]"
-            >
-              <LinkedInIcon className="size-4 text-[#0a66c2]" />
-              {text.linkedin}
-            </a>
-          )}
           {profile.email && (
             <a
               href={`mailto:${profile.email}`}
@@ -316,9 +283,9 @@ export function CstanAiChat({
           )}
           <a
             href="/api/contact"
-            download="cstan.vcf"
+            download="gulichan.vcf"
             onClick={() => trackCstanEvent("save_contact_clicked", { location: "ai_chat", locale })}
-            className="col-span-2 flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#f55d2d]/35 bg-white px-3 text-[10px] font-extrabold text-[#d9471d]"
+            className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#f55d2d]/35 bg-white px-3 text-[10px] font-extrabold text-[#d9471d]"
           >
             <UserPlus className="size-4" aria-hidden="true" />
             {text.save}

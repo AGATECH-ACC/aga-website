@@ -48,6 +48,7 @@ type Tab = (typeof tabs)[number]
 const content = {
   en: {
     displayName: localizedProfile.en.displayName,
+    heroName: "GULICHAN",
     headerSubtitle: localizedProfile.en.role,
     languageLabel: "切换至中文",
     languageCode: "中",
@@ -56,10 +57,10 @@ const content = {
     copied: "Copied",
     shareText: `Meet ${profile.name}, ${profile.role} at ${profile.company}.`,
     whatsappMessage: "Hi Chi Shiong, I found your contact page and would like to connect.",
-    eyebrow: "You tapped CSTAN's card ✦",
+    eyebrow: "You tapped GULICHAN's card ✦",
     heroDescription: localizedProfile.en.tagline,
-    companyCta: "Ask CSTAN AI",
-    aiTitle: "CSTAN AI",
+    companyCta: "Ask GULICHAN AI",
+    aiTitle: "GULICHAN AI",
     aiStatus: "AI receptionist",
     backToProfile: "Back to profile",
     stats: [
@@ -75,7 +76,7 @@ const content = {
     },
     tabContent: {
       about: {
-        title: "About CSTAN",
+        title: "About GULICHAN",
         body: localizedProfile.en.description,
         items: [
           "Certified systemization architect",
@@ -113,7 +114,7 @@ const content = {
     instagramAction: "Follow AGA",
     website: "Website",
     websiteAction: "Visit AGA Ventures",
-    cta: "Talk to CSTAN",
+    cta: "Talk to GULICHAN",
     saveContact: "Save contact",
     responseNote: "Usually replies within one business day",
     moreInfoTitle: "How I can help",
@@ -161,6 +162,7 @@ const content = {
   },
   zh: {
     displayName: localizedProfile.zh.displayName,
+    heroName: localizedProfile.zh.displayName,
     headerSubtitle: localizedProfile.zh.role,
     languageLabel: "Switch to English",
     languageCode: "EN",
@@ -169,10 +171,10 @@ const content = {
     copied: "已复制",
     shareText: "联系 AGA Ventures 创办人陈起祥。",
     whatsappMessage: "你好起祥，我从你的联系页面找到你，想和你聊聊。",
-    eyebrow: "你轻触了 CSTAN 的名片 ✦",
+    eyebrow: "你轻触了 GULICHAN 的名片 ✦",
     heroDescription: localizedProfile.zh.tagline,
-    companyCta: "问 CSTAN AI",
-    aiTitle: "CSTAN AI",
+    companyCta: "问 GULICHAN AI",
+    aiTitle: "GULICHAN AI",
     aiStatus: "AI 接待助手",
     backToProfile: "返回个人资料",
     stats: [
@@ -222,7 +224,7 @@ const content = {
     instagramAction: "关注 AGA",
     website: "官方网站",
     websiteAction: "访问 AGA Ventures",
-    cta: "联系 CSTAN",
+    cta: "联系 GULICHAN",
     saveContact: "保存联系人",
     responseNote: "通常在一个工作日内回复",
     moreInfoTitle: "我能如何协助",
@@ -482,7 +484,7 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
               <Sparkles aria-hidden="true" />
               {copy.eyebrow}
             </p>
-            <h1 id="profile-name">{copy.displayName}</h1>
+            <h1 id="profile-name">{copy.heroName}</h1>
             <p className={styles.heroDescription}>{copy.heroDescription}</p>
             <button className={styles.companyPill} type="button" onClick={openAiChat}>
               <Bot aria-hidden="true" />
@@ -543,7 +545,13 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
                   <ArrowLeft aria-hidden="true" />
                 </button>
                 <span className={styles.aiSheetMark} aria-hidden="true">
-                  <Bot />
+                  <Image
+                    src="/assets/tan-chi-shiong-profile.png"
+                    alt=""
+                    fill
+                    sizes="34px"
+                    className={styles.aiSheetPortrait}
+                  />
                 </span>
                 <div>
                   <strong>{copy.aiTitle}</strong>
@@ -589,7 +597,7 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
             onScroll={handleSheetScroll}
           >
             {isAiOpen ? (
-              <CstanAiChat locale={locale} onOpenContact={openContactFromAi} />
+              <CstanAiChat locale={locale} />
             ) : (
               <>
                 <div
@@ -628,7 +636,7 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
                       aria-label={copy.messageAria}
                       onClick={() => trackCstanEvent("whatsapp_clicked", { location: "profile", locale })}
                     >
-                      <WhatsAppIcon />
+                      <WhatsAppIcon className={styles.whatsappContactGlyph} />
                     </a>
                   )}
                   {profile.phone && (
@@ -769,7 +777,7 @@ export function GulichanTanContactCard({ locale }: { locale: Locale }) {
                 <a
                   className={styles.saveButton}
                   href={vCardHref}
-                  download="cstan.vcf"
+                  download="gulichan.vcf"
                   aria-label={copy.saveContact}
                   onClick={() => trackCstanEvent("save_contact_clicked", { location: "action_dock", locale })}
                 >

@@ -35,7 +35,7 @@ export function GET() {
   return new Response(createVCard(), {
     headers: {
       "Cache-Control": "public, max-age=3600, s-maxage=86400",
-      "Content-Disposition": 'attachment; filename="cstan.vcf"',
+      "Content-Disposition": 'attachment; filename="gulichan.vcf"',
       "Content-Type": "text/vcard; charset=utf-8",
     },
   })

@@ -88,7 +88,7 @@ export async function POST(request: Request) {
 
   if (isRateLimited(ip)) {
     return json(
-      "Looks like we've talked quite a bit 😄. Best move now is probably to speak with CSTAN directly.",
+      "Looks like we've talked quite a bit 😄. Best move now is probably to speak with GULICHAN directly.",
       true,
       429,
     )
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
 
   if (!accountId || !apiToken) {
     return json(
-      "CSTAN AI is not connected yet 😄. You can still contact CSTAN directly below.",
+      "GULICHAN AI is not connected yet 😄. You can still contact GULICHAN directly below.",
       true,
       503,
     )
@@ -133,7 +133,7 @@ export async function POST(request: Request) {
     if (!response.ok) {
       console.error("Cloudflare Workers AI request failed", { status: response.status })
       return json(
-        "CSTAN AI is taking a short break 😄. You can still contact CSTAN directly below.",
+        "GULICHAN AI is taking a short break 😄. You can still contact GULICHAN directly below.",
         true,
         503,
       )
@@ -145,7 +145,7 @@ export async function POST(request: Request) {
     if (!assistantMessage) {
       console.error("Cloudflare Workers AI returned an unexpected response shape")
       return json(
-        "CSTAN AI is taking a short break 😄. You can still contact CSTAN directly below.",
+        "GULICHAN AI is taking a short break 😄. You can still contact GULICHAN directly below.",
         true,
         503,
       )
@@ -157,7 +157,7 @@ export async function POST(request: Request) {
       name: error instanceof Error ? error.name : "UnknownError",
     })
     return json(
-      "CSTAN AI is taking a short break 😄. You can still contact CSTAN directly below.",
+      "GULICHAN AI is taking a short break 😄. You can still contact GULICHAN directly below.",
       true,
       503,
     )

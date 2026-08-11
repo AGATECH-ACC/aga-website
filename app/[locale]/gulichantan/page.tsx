@@ -11,14 +11,14 @@ type GulichanTanPageProps = {
 
 const metadataByLocale: Record<Locale, { title: string; description: string }> = {
   en: {
-    title: "CSTAN — Founder & Business Architect",
+    title: "GULICHAN — Founder & Business Architect",
     description:
-      "Meet CSTAN and ask his AI about business systems, automation, AGA Ventures and AI.",
+      "Meet GULICHAN and ask his AI about business systems, automation, AGA Ventures and AI.",
   },
   zh: {
-    title: "CSTAN — 创办人兼企业架构师",
+    title: "GULICHAN — 创办人兼企业架构师",
     description:
-      "认识 CSTAN，并向他的 AI 了解企业系统、自动化、AGA Ventures 与 AI。",
+      "认识 GULICHAN，并向他的 AI 了解企业系统、自动化、AGA Ventures 与 AI。",
   },
 }
 

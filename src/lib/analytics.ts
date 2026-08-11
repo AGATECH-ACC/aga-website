@@ -22,5 +22,5 @@ export function trackCstanEvent(
   }
 
   window.dispatchEvent(new CustomEvent("cstan:analytics", { detail }))
-  console.info("[CSTAN analytics]", detail)
+  console.info("[GULICHAN analytics]", detail)
 }
