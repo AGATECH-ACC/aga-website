@@ -37,6 +37,11 @@ export default async function AdminLoginPage({ searchParams }: LoginPageProps) {
               This email is not active in the admin allowlist.
             </div>
           ) : null}
+          {status === "lookup-error" ? (
+            <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+              Admin allowlist lookup failed. Please try again in a moment.
+            </div>
+          ) : null}
           <form action={signInAdmin} className="mt-5 flex flex-col gap-3">
             <Input name="email" type="email" placeholder="admin@agaventures.ai" required />
             <Input name="passcode" type="password" placeholder="Admin passcode" required />

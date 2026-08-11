@@ -22,8 +22,8 @@ function MediaCard({ asset }: { asset: CmsMediaAsset }) {
   const [copied, setCopied] = useState(false)
 
   return (
-    <Card>
-      <div className="aspect-video overflow-hidden rounded-t-xl bg-muted">
+    <Card size="sm">
+      <div className="aspect-[4/3] overflow-hidden rounded-t-xl bg-muted">
         {hasImageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -36,15 +36,15 @@ function MediaCard({ asset }: { asset: CmsMediaAsset }) {
             onError={() => setDimensions("Dimensions unavailable")}
           />
         ) : (
-          <div className="grid h-full place-items-center px-4 text-center text-sm font-medium text-muted-foreground">
+          <div className="grid h-full place-items-center px-3 text-center text-xs font-medium text-muted-foreground">
             CMS metadata record
           </div>
         )}
       </div>
-      <CardContent className="flex flex-col gap-3 p-4 text-sm">
+      <CardContent className="flex flex-col gap-2 p-3 text-xs">
         <div className="grid gap-1">
-          <p className="font-semibold">{asset.altText || asset.path}</p>
-          <p className="break-all text-muted-foreground">{asset.publicUrl || asset.path}</p>
+          <p className="truncate font-semibold">{asset.altText || asset.path}</p>
+          <p className="line-clamp-2 break-all text-muted-foreground">{asset.publicUrl || asset.path}</p>
           <p className="text-xs text-muted-foreground">
             {dimensions} · {formatBytes(asset.sizeBytes)}
           </p>
@@ -55,7 +55,7 @@ function MediaCard({ asset }: { asset: CmsMediaAsset }) {
           </Badge>
           <Button
             type="button"
-            size="sm"
+            size="xs"
             variant="secondary"
             disabled={!hasImageUrl}
             onClick={async () => {
@@ -73,7 +73,7 @@ function MediaCard({ asset }: { asset: CmsMediaAsset }) {
             <input type="hidden" name="path" value={asset.path} />
             <Button
               type="submit"
-              size="sm"
+              size="xs"
               variant="danger"
               onClick={(event) => {
                 if (!window.confirm(`Delete "${asset.path}"? This removes it from storage and the media library.`)) {
@@ -93,7 +93,7 @@ function MediaCard({ asset }: { asset: CmsMediaAsset }) {
 
 export function MediaLibraryGrid({ assets }: { assets: CmsMediaAsset[] }) {
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {assets.length ? (
         assets.map((asset) => <MediaCard key={asset.id} asset={asset} />)
       ) : (

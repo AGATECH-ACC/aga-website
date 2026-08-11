@@ -61,13 +61,18 @@ export async function signInAdmin(formData: FormData) {
     redirect("/admin/login?status=invalid")
   }
 
-  const { data: admin } = await supabase
+  const { data: admin, error } = await supabase
     .schema("cms")
     .from("admin_users")
     .select("email, role, active")
     .eq("email", email)
     .eq("active", true)
     .maybeSingle()
+
+  if (error) {
+    console.error("Admin allowlist lookup failed", error)
+    redirect("/admin/login?status=lookup-error")
+  }
 
   if (!admin) {
     redirect("/admin/login?status=unauthorized")

@@ -1,6 +1,5 @@
 import Link from "next/link"
 
-import { AdminDashboardQuickActions } from "@/components/admin/AdminDashboardQuickActions"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cmsCollections, type CmsCollection, type CmsEntry } from "@/lib/cms/types"
@@ -158,13 +157,6 @@ export default async function AdminDashboardPage() {
         </CardContent>
       </Card>
 
-      <section className="grid gap-4">
-        <div>
-          <h2 className="text-2xl font-semibold tracking-normal">Quick actions</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Create high-frequency content directly from the dashboard.</p>
-        </div>
-        <AdminDashboardQuickActions mediaAssets={mediaAssets} />
-      </section>
     </div>
   )
 }
